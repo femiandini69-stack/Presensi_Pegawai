@@ -6,8 +6,8 @@
     <title>IT-TECH LOG SYSTEM</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
-        body { background-color: #050505; color: #d1d1d1; font-family: 'Courier New', Courier, monospace; }
-        .card { background-color: #111111; border: 1px solid #222; color: #fff; border-radius: 0; }
+        body { background-color: #3775ac; color: #d1d1d1; font-family: 'Courier New', Courier, monospace; }
+        .card { background-color: #153857; border: 1px solid #222; color: #fff; border-radius: 0; }
         .navbar { background-color: #000; border-bottom: 2px solid #b0cff0; }
         .table { color: #d1d1d1; border-color: #333; }
         .table-hover tbody tr:hover { background-color: #1a1a1a; color: #00d4ff; }
@@ -38,5 +38,6 @@
         @endif
         @yield('content')
     </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

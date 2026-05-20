@@ -19,9 +19,9 @@
                     </div>
 
                     <div class="mb-3">
-                        <label class="form-label fw-bold">NIP</label>
-                        <input type="text" class="form-control @error('nip') is-invalid @enderror" name="nip" value="{{ old('nip', $attendance->nip) }}">
-                        @error('nip') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                        <label class="form-label fw-bold">Tanggal</label>
+                        <input type="date" class="form-control @error('tanggal') is-invalid @enderror" name="tanggal" value="{{ old('tanggal', $attendance->tanggal) }}">
+                        @error('tanggal') <div class="invalid-feedback">{{ $message }}</div> @enderror
                     </div>
 
                     <div class="row">
