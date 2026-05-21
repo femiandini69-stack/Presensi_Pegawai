@@ -20,7 +20,7 @@ class AttendanceController extends Controller
         return view('attendance.create');
     }
 
-    // STORE: Menyimpan data baru + Validasi ketat
+    // STORE: Menyimpan data baru
     public function store(Request $request)
     {
         $request->validate([
@@ -33,63 +33,73 @@ class AttendanceController extends Controller
             'nama_pegawai.required' => 'Nama pegawai wajib diisi.',
             'nip.required' => 'NIP wajib diisi.',
             'nip.numeric' => 'NIP harus berupa angka.',
-            'nip.unique' => 'NIP ini sudah terdaftar di sistem.',
-            'tanggal.required' => 'Tanggal presensi wajib diisi.',
-            'jam_masuk.required' => 'Jam masuk wajib ditentukan.',
-            'keterangan_kehadiran.required' => 'Pilih keterangan kehadiran yang valid.'
+            'nip.unique' => 'NIP sudah terdaftar.',
+            'tanggal.required' => 'Tanggal wajib diisi.',
+            'jam_masuk.required' => 'Jam masuk wajib diisi.',
+            'keterangan_kehadiran.required' => 'Pilih keterangan kehadiran.'
         ]);
 
         Attendance::create($request->all());
 
-        return redirect()->route('attendance.index')->with('success', 'Data presensi berhasil ditambahkan!');
+        return redirect()->route('attendance.index')
+                         ->with('success', 'Data presensi berhasil ditambahkan!');
     }
 
-    public function show(string $id) { // Kosongkan saja 
+    // SHOW
+    public function show(string $id)
+    {
+        //
     }
 
-    // EDIT: Menampilkan form edit berdasarkan data ID tertentu
+    // EDIT
     public function edit(string $id)
     {
         $attendance = Attendance::findOrFail($id);
+
         return view('attendance.edit', compact('attendance'));
     }
 
-    // UPDATE: Memperbarui data lama ke database + Validasi unik kecualikan ID ini
+    // UPDATE
     public function update(Request $request, string $id)
     {
-    // 1. Cari data berdasarkan ID
-    $attendance = Attendance::findOrFail($id);
+        // Cari data
+        $attendance = Attendance::findOrFail($id);
 
-    // 2. Validasi (Sangat penting agar data tidak error saat masuk DB)
-    $request->validate([
-         'nama_pegawai' => 'required|string|max:255',
+        // Validasi
+        $request->validate([
+            'nama_pegawai' => 'required|string|max:255',
             'nip' => 'required|numeric|unique:attendances,nip,' . $id,
             'tanggal' => 'required|date',
             'jam_masuk' => 'required',
+            'jam_pulang' => 'required',
             'keterangan_kehadiran' => 'required|in:Hadir,Sakit,Izin,Dinas Luar'
         ], [
             'nama_pegawai.required' => 'Nama pegawai tidak boleh kosong.',
             'nip.required' => 'NIP tidak boleh kosong.',
-            'nip.numeric' => 'NIP wajib berupa angka.',
-            'nip.unique' => 'NIP sudah digunakan pegawai lain.',
+            'nip.numeric' => 'NIP harus angka.',
+            'nip.unique' => 'NIP sudah digunakan.',
             'tanggal.required' => 'Tanggal wajib diisi.',
-            'jam_masuk.required' => 'Jam masuk wajib diisi.'
+            'jam_masuk.required' => 'Jam masuk wajib diisi.',
+            'jam_pulang.required' => 'Jam pulang wajib diisi.',
+            'keterangan_kehadiran.required' => 'Keterangan wajib dipilih.'
         ]);
 
-    // 3. Eksekusi Perubahan
-    $attendance->update($request->all());
+        // Update data
+        $attendance->update($request->all());
 
-    // 4. Kembali ke halaman utama dengan pesan sukses
-    return redirect()->route('attendance.index')
-                     ->with('success', 'DATABASE_UPDATED: Log berhasil diperbarui.');
-}
+        // Redirect
+        return redirect()->route('attendance.index')
+                         ->with('success', 'Data berhasil diperbarui!');
+    }
 
-    // DELETE: Menghapus data dari database
+    // DELETE
     public function destroy(string $id)
     {
         $attendance = Attendance::findOrFail($id);
+
         $attendance->delete();
 
-        return redirect()->route('attendance.index')->with('success', 'Data catatan kehadiran berhasil dihapus!');
+        return redirect()->route('attendance.index')
+                         ->with('success', 'Data berhasil dihapus!');
     }
 }
