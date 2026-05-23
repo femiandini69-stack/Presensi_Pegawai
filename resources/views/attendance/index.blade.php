@@ -1,69 +1,152 @@
 @extends('layouts.app')
 
 @section('content')
-<div class="card shadow-sm border-0">
-    <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h5 class="m-0 fw-bold" style="color:#1A3D63;">
-    Buku Presensi Harian Pegawai
-</h5>
-        <a href="{{ route('attendance.create') }}" class="btn btn-success btn-sm fw-bold">+ Tambah Presensi</a>
-    </div>
-    <div class="card-body">
-        <div class="table-responsive">
-            <table class="table table-striped table-hover align-middle">
-                <thead class="table-dark">
-                    <tr>
-                        <th>No</th>
-                        <th>NIP</th>
-                        <th>Nama Pegawai</th>
-                        <th>Tanggal</th>
-                        <th>Jam Masuk</th>
-                        <th>Jam Pulang</th>
-                        <th>Keterangan</th>
-                        <th class="text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    @forelse($attendances as $index => $item)
+<div class="container">
+
+    <div class="card shadow-sm border-0 rounded-4 mb-3">
+
+        {{-- HEADER --}}
+        <div class="card-header d-flex justify-content-between align-items-center"
+             style="background-color:#E6EEF6;">
+
+            <h5 class="fw-bold m-0" style="color:#425A73;">
+                Buku Presensi Pegawai
+            </h5>
+
+            <a href="{{ route('attendance.create') }}"
+               class="btn fw-bold text-white"
+               style="background-color:#789aca;">
+                + Tambah Data
+            </a>
+        </div>
+
+        <div class="card-body">
+
+            {{-- SEARCH + FILTER --}}
+            <form method="GET" action="{{ route('attendance.index') }}" class="mb-3">
+                <div class="row g-2">
+
+                    <div class="col-md-4">
+                        <input type="text"
+                               name="search"
+                               class="form-control"
+                               placeholder="Cari nama atau NIP..."
+                               value="{{ request('search') }}">
+                    </div>
+
+                    <div class="col-md-3">
+                        <select name="filter" class="form-select">
+                            <option value="">Semua Status</option>
+                            <option value="Hadir" {{ request('filter') == 'Hadir' ? 'selected' : '' }}>Hadir</option>
+                            <option value="Sakit" {{ request('filter') == 'Sakit' ? 'selected' : '' }}>Sakit</option>
+                            <option value="Izin" {{ request('filter') == 'Izin' ? 'selected' : '' }}>Izin</option>
+                            <option value="Dinas Luar" {{ request('filter') == 'Dinas Luar' ? 'selected' : '' }}>Dinas Luar</option>
+                        </select>
+                    </div>
+
+                    <div class="col-md-2">
+                        <button class="btn fw-bold text-white w-100"
+                                style="background-color:#206abc;">
+                            Cari
+                        </button>
+                    </div>
+
+                    <div class="col-md-2">
+                        <a href="{{ route('attendance.index') }}"
+                           class="btn btn-secondary w-100">
+                            Reset
+                        </a>
+                    </div>
+
+                </div>
+            </form>
+
+            {{-- TABLE --}}
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+
+                    <thead style="background-color:#E6EEF6;">
+                        <tr>
+                            <th>No</th>
+                            <th>Nama</th>
+                            <th>NIP</th>
+                            <th>Tanggal</th>
+                            <th>Masuk</th>
+                            <th>Pulang</th>
+                            <th>Status</th>
+                            <th>Aksi</th>
+                        </tr>
+                    </thead>
+
+                    <tbody>
+                        @forelse($attendances as $item)
                         <tr>
                             <td>{{ $loop->iteration }}</td>
-                            <td><span class="badge bg-secondary">{{ $item->nip }}</span></td>
-                            <td class="fw-bold text-secondary">{{ $item->nama_pegawai }}</td>
-                            <td>{{ \Carbon\Carbon::parse($item->tanggal)->format('d-m-Y') }}</td>
-                            <td><span class="text-success fw-bold">{{ $item->jam_masuk }}</span></td>
+                            <td>{{ $item->nama_pegawai }}</td>
+                            <td>{{ $item->nip }}</td>
+                            <td>{{ $item->tanggal }}</td>
+                            <td>{{ $item->jam_masuk }}</td>
+                            <td>{{ $item->jam_pulang }}</td>
+
                             <td>
-                                <span class="text-danger fw-bold">{{ $item->jam_pulang ?? '--:--:--' }}</span>
-                            </td>
+    @php
+        $status = $item->keterangan_kehadiran;
+    @endphp
+
+    @if($status == 'Hadir')
+        <span class="badge" style="background-color:#198754;">Hadir</span>
+
+    @elseif($status == 'Sakit')
+        <span class="badge" style="background-color:#dc3545;">Sakit</span>
+
+    @elseif($status == 'Izin')
+        <span class="badge" style="background-color:#ffc107; color:#000;">Izin</span>
+
+    @elseif($status == 'Dinas Luar')
+        <span class="badge" style="background-color:#0d6efd;">Dinas Luar</span>
+
+    @else
+        <span class="badge bg-secondary">
+            {{ $status }}
+        </span>
+    @endif
+</td>
+
                             <td>
-                                @if($item->keterangan_kehadiran == 'Hadir')
-                                    <span class="badge bg-success">Hadir</span>
-                                @elseif($item->keterangan_kehadiran == 'Sakit')
-                                    <span class="badge bg-warning text-dark">Sakit</span>
-                                @elseif($item->keterangan_kehadiran == 'Izin')
-                                    <span class="badge bg-info text-dark">Izin</span>
-                                @else
-                                    <span class="badge bg-purple style bg-dark">Dinas Luar</span>
-                                @endif
-                            </td>
-                            <td class="text-center">
-                                <a href="{{ route('attendance.edit', $item->id) }}" class="btn btn-warning btn-sm mx-1">Edit</a>
-                                
-                                <!-- Form Delete dengan Konfirmasi -->
-                                <form action="{{ route('attendance.destroy', $item->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Apakah kelompok Anda yakin ingin menghapus catatan kehadiran atas nama {{ $item->nama_pegawai }}?')">
+                                <a href="{{ route('attendance.edit', $item->id) }}"
+                                   class="btn btn-sm text-white"
+                                   style="background-color:#5e82ac;">
+                                    Edit
+                                </a>
+
+                                <form action="{{ route('attendance.destroy', $item->id) }}"
+                                      method="POST"
+                                      class="d-inline">
                                     @csrf
                                     @method('DELETE')
-                                    <button type="submit" class="btn btn-danger btn-sm">Hapus</button>
+
+                                    <button class="btn btn-sm text-white"
+                                            style="background-color:#3c5e82;"
+                                            onclick="return confirm('Apakah kelompok Anda yakin ingin menghapus catatan kehadiran atas nama {{ $item->nama_pegawai }}?')">
+                                        Hapus
+                                    </button>
                                 </form>
                             </td>
                         </tr>
-                    @empty
+                        @empty
                         <tr>
-                            <td colspan="8" class="text-center text-muted py-4">Belum ada data presensi hari ini.</td>
+                            <td colspan="8" class="text-center text-muted">
+                                Data tidak ditemukan
+                            </td>
                         </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                        @endforelse
+                    </tbody>
+
+                </table>
+            </div>
+
         </div>
     </div>
+
 </div>
 @endsection
