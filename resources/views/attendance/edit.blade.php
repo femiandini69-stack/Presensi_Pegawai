@@ -5,7 +5,13 @@
     <div class="col-md-8">
         <div class="card shadow-sm border-0">
             <div class="card-header bg-white py-3">
+
                 <h5 class="m-0 text-warning fw-bold">✏️ Edit Catatan Presensi Pegawai</h5>
+
+                <h5 class="m-0 text-warning fw-bold">
+                    Edit Catatan Presensi Pegawai
+                </h5>
+
             </div>
             <div class="card-body">
                 <form action="{{ route('attendance.update', $attendance->id) }}" method="POST">

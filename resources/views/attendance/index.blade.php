@@ -3,7 +3,9 @@
 @section('content')
 <div class="card shadow-sm border-0">
     <div class="card-header bg-white py-3 d-flex justify-content-between align-items-center">
-        <h5 class="m-0 text-primary fw-bold">📖 Buku Presensi Harian Pegawai</h5>
+        <h5 class="m-0 fw-bold" style="color:#1A3D63;">
+    Buku Presensi Harian Pegawai
+</h5>
         <a href="{{ route('attendance.create') }}" class="btn btn-success btn-sm fw-bold">+ Tambah Presensi</a>
     </div>
     <div class="card-body">
