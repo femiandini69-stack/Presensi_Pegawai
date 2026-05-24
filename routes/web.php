@@ -7,4 +7,6 @@ Route::get('/', function () {
     return redirect()->route('attendance.index');
 });
 
+
+// test perubahan
 Route::resource('attendance', AttendanceController::class);
