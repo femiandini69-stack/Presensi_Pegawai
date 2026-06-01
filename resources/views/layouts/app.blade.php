@@ -104,7 +104,7 @@
     </div>
 @endif
 
-    {{-- MODAL KONFIRMASI HAPUS --}}
+    {{-- KONFIRMASI HAPUS --}}
     <div class="modal fade" id="modalHapus" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0 shadow">
@@ -143,10 +143,16 @@
     <script>
         window.addEventListener('load', function () {
             const toast = document.getElementById('successToast');
+
             if (toast) {
-                setTimeout(function () {
-                    toast.style.display = 'none';
-                }, 3000);
+                setTimeout(() => {
+                    toast.style.transition = 'opacity 0.5s ease';
+                    toast.style.opacity = '0';
+
+                    setTimeout(() => {
+                        toast.remove();
+                    }, 500);
+                }, 3000); // 3 detik
             }
         });
 
