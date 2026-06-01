@@ -152,7 +152,7 @@
                     setTimeout(() => {
                         toast.remove();
                     }, 500);
-                }, 3000); // 3 detik
+                }, 5000); // 3 detik
             }
         });
 
