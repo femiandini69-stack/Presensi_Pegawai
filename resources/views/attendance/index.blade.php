@@ -6,8 +6,9 @@
         <div class="card shadow-sm border-0 rounded-4 mb-3">
 
             {{-- HEADER --}}
-            <div class="card-header d-flex justify-content-between align-items-center" style="background-color:#E6EEF6;">
-                <h5 class="fw-bold m-0" style="color:#425A73;">
+            <div class="card-header d-flex justify-content-between align-items-center"
+                style="background-color: #425A73; border-radius: 16px 16px 0 0;">
+                <h5 class="fw-bold m-0" style="color: #E6EEF6;">
                     Buku Presensi Pegawai
                 </h5>
                 <a href="{{ route('attendance.create') }}" class="btn fw-bold text-white" style="background-color:#789aca;">
@@ -30,8 +31,7 @@
                                 <option value="Hadir" {{ request('filter') == 'Hadir' ? 'selected' : '' }}>Hadir</option>
                                 <option value="Sakit" {{ request('filter') == 'Sakit' ? 'selected' : '' }}>Sakit</option>
                                 <option value="Izin" {{ request('filter') == 'Izin' ? 'selected' : '' }}>Izin</option>
-                                <option value="Dinas Luar" {{ request('filter') == 'Dinas Luar' ? 'selected' : '' }}>Dinas
-                                    Luar</option>
+                                <option value="Dinas Luar" {{ request('filter') == 'Dinas Luar' ? 'selected' : '' }}>Dinas Luar</option>
                             </select>
                         </div>
                         <div class="col-md-2">
@@ -59,7 +59,7 @@
                                 <th>Masuk</th>
                                 <th>Pulang</th>
                                 <th>Status</th>
-                                <th>Aksi</th>
+                                <th>    </th>
                             </tr>
                         </thead>
                         <tbody>
@@ -76,9 +76,9 @@
                                         @if(in_array($item->keterangan_kehadiran, ['Sakit', 'Izin']))
                                             <span class="text-muted">-</span>
                                         @else
-                                                                {{ $item->jam_pulang
-            ? \Carbon\Carbon::parse($item->jam_pulang)->format('H:i')
-            : \Carbon\Carbon::parse($item->jam_masuk)->addHours(8)->format('H:i') }}
+                                            {{ $item->jam_pulang
+                                            ? \Carbon\Carbon::parse($item->jam_pulang)->format('H:i')
+                                            : \Carbon\Carbon::parse($item->jam_masuk)->addHours(8)->format('H:i') }}
                                         @endif
                                     </td>
 
@@ -86,13 +86,13 @@
                                     <td>
                                         @php $status = $item->keterangan_kehadiran; @endphp
                                         @if($status == 'Hadir')
-                                            <span class="badge" style="background-color:#198754;">Hadir</span>
+                                            <span class="badge" style="background-color: #198754;">Hadir</span>
                                         @elseif($status == 'Sakit')
-                                            <span class="badge" style="background-color:#dc3545;">Sakit</span>
+                                            <span class="badge" style="background-color: #dc3545;">Sakit</span>
                                         @elseif($status == 'Izin')
-                                            <span class="badge" style="background-color:#ffc107; color:#000;">Izin</span>
+                                            <span class="badge" style="background-color: #ffc107; color:#000;">Izin</span>
                                         @elseif($status == 'Dinas Luar')
-                                            <span class="badge" style="background-color:#0d6efd;">Dinas Luar</span>
+                                            <span class="badge" style="background-color: #0d6efd;">Dinas Luar</span>
                                         @else
                                             <span class="badge bg-secondary">{{ $status }}</span>
                                         @endif
@@ -101,11 +101,11 @@
                                     {{-- AKSI --}}
                                     <td>
                                         <a href="{{ route('attendance.edit', $item->id) }}" class="btn btn-sm text-white"
-                                            style="background-color:#5e82ac;">
+                                            style="background-color: #5e82ac;">
                                             Edit
                                         </a>
 
-                                        <button type="button" class="btn btn-sm text-white" style="background-color:#3c5e82;"
+                                        <button type="button" class="btn btn-sm text-white" style="background-color: #3c5e82;"
                                             onclick="konfirmasiHapus(
                                                     {{ $item->id }},
                                                     '{{ $item->nama_pegawai }}',
@@ -129,11 +129,11 @@
                 {{-- REKAP TOTAL --}}
                 @if($attendances->count() > 0)
                     @php
-    $totalHadir = $attendances->where('keterangan_kehadiran', 'Hadir')->count();
-    $totalSakit = $attendances->where('keterangan_kehadiran', 'Sakit')->count();
-    $totalIzin = $attendances->where('keterangan_kehadiran', 'Izin')->count();
-    $totalDinas = $attendances->where('keterangan_kehadiran', 'Dinas Luar')->count();
-    $totalSemua = $attendances->count();
+                        $totalHadir = $attendances->where('keterangan_kehadiran', 'Hadir')->count();
+                        $totalSakit = $attendances->where('keterangan_kehadiran', 'Sakit')->count();
+                        $totalIzin = $attendances->where('keterangan_kehadiran', 'Izin')->count();
+                        $totalDinas = $attendances->where('keterangan_kehadiran', 'Dinas Luar')->count();
+                        $totalSemua = $attendances->count();
                     @endphp
 
                     <div class="mt-4">
@@ -142,32 +142,32 @@
 
                             <div class="flex-fill text-center py-3 px-2 rounded-3 border border-2 border-white shadow-sm"
                                 style="background-color:#e8f5e9;">
-                                <div class="fw-bold fs-3 mb-1" style="color:#198754;">{{ $totalHadir }}</div>
-                                <div class="small fw-semibold" style="color:#198754;">Hadir</div>
+                                <div class="fw-bold fs-3 mb-1" style="color: #198754;">{{ $totalHadir }}</div>
+                                <div class="small fw-semibold" style="color: #198754;">Hadir</div>
                             </div>
 
                             <div class="flex-fill text-center py-3 px-2 rounded-3 border border-2 border-white shadow-sm"
                                 style="background-color:#fdecea;">
-                                <div class="fw-bold fs-3 mb-1" style="color:#dc3545;">{{ $totalSakit }}</div>
-                                <div class="small fw-semibold" style="color:#dc3545;">Sakit</div>
+                                <div class="fw-bold fs-3 mb-1" style="color: #dc3545;">{{ $totalSakit }}</div>
+                                <div class="small fw-semibold" style="color: #dc3545;">Sakit</div>
                             </div>
 
                             <div class="flex-fill text-center py-3 px-2 rounded-3 border border-2 border-white shadow-sm"
                                 style="background-color:#fff8e1;">
-                                <div class="fw-bold fs-3 mb-1" style="color:#d4a000;">{{ $totalIzin }}</div>
-                                <div class="small fw-semibold" style="color:#d4a000;">Izin</div>
+                                <div class="fw-bold fs-3 mb-1" style="color: #d4a000;">{{ $totalIzin }}</div>
+                                <div class="small fw-semibold" style="color: #d4a000;">Izin</div>
                             </div>
 
                             <div class="flex-fill text-center py-3 px-2 rounded-3 border border-2 border-white shadow-sm"
                                 style="background-color:#e8f0fe;">
-                                <div class="fw-bold fs-3 mb-1" style="color:#0d6efd;">{{ $totalDinas }}</div>
-                                <div class="small fw-semibold" style="color:#0d6efd;">Dinas Luar</div>
+                                <div class="fw-bold fs-3 mb-1" style="color: #0d6efd;">{{ $totalDinas }}</div>
+                                <div class="small fw-semibold" style="color: #0d6efd;">Dinas Luar</div>
                             </div>
 
                             <div class="flex-fill text-center py-3 px-2 rounded-3 border border-2 border-white shadow-sm"
                                 style="background-color:#E6EEF6;">
-                                <div class="fw-bold fs-3 mb-1" style="color:#425A73;">{{ $totalSemua }}</div>
-                                <div class="small fw-semibold" style="color:#425A73;">Total</div>
+                                <div class="fw-bold fs-3 mb-1" style="color: #425A73;">{{ $totalSemua }}</div>
+                                <div class="small fw-semibold" style="color: #425A73;">Total</div>
                             </div>
 
                         </div>

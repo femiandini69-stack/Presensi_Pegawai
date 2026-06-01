@@ -55,7 +55,6 @@
             font-weight: bold;
         }
 
-        /* Toast */
         .toast-container {
             position: fixed;
             top: 20px;
@@ -69,6 +68,18 @@
             color: #0f5132;
             border-radius: 10px;
             min-width: 280px;
+        }
+
+        #closeToastBtn {
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 18px;
+            margin-left: auto;
+            background: none;
+            border: none;
+            color: #0f5132;
+            padding: 0 4px;
+            line-height: 1;
         }
     </style>
 </head>
@@ -85,31 +96,30 @@
 
     {{-- TOAST ALERT --}}
     @if(session('success'))
-        <div class="toast-container">
-            <div id="successToast" class="toast toast-success p-3 d-flex align-items-center gap-2 shadow show" role="alert">
-                <span style="font-size:20px;">✅</span>
-                <div class="fw-semibold">{{ session('success') }}</div>
-                <button type="button" class="btn-close ms-auto" id="closeToastBtn"></button>
-            </div>
+    <div class="toast-container">
+        <div id="successToast" class="toast toast-success p-3 d-flex align-items-center gap-2 shadow show" role="alert">
+            <span style="font-size:20px;">✅</span>
+            <div class="fw-semibold">{{ session('success') }}</div>
         </div>
-    @endif
+    </div>
+@endif
 
     {{-- MODAL KONFIRMASI HAPUS --}}
     <div class="modal fade" id="modalHapus" tabindex="-1">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content rounded-4 border-0 shadow">
-                <div class="modal-header border-0" style="background-color:#fdecea;">
-                    <h6 class="modal-title fw-bold" style="color:#dc3545;">
-                        ⚠️ Konfirmasi Hapus
+                <div class="modal-header border-0" style="background-color: #5e82ac;">
+                    <h6 class="modal-title fw-bold" style="color: #0E1A2B;">
+                        ⚠️  Konfirmasi Hapus
                     </h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body text-center py-4">
                     <p class="mb-1">Apakah Anda yakin ingin menghapus catatan kehadiran</p>
-                    <p class="fw-bold fs-5 mb-0" id="namaHapus" style="color:#425A73;"></p>
+                    <p class="fw-bold fs-5 mb-0" id="namaHapus" style="color: #1c2125;"></p>
                 </div>
                 <div class="modal-footer border-0 justify-content-center gap-2">
-                    <button type="button" class="btn fw-bold px-4" style="background-color:#BFC9D9; color:#0E1A2B;"
+                    <button type="button" class="btn fw-bold px-4" style="background-color: #BFC9D9; color: #0E1A2B;"
                         data-bs-dismiss="modal">
                         Batal
                     </button>
@@ -117,7 +127,7 @@
                         @csrf
                         @method('DELETE')
                         <button type="submit" class="btn fw-bold px-4 text-white" style="background-color:#dc3545;">
-                            Ya, Hapus
+                            Hapus
                         </button>
                     </form>
                 </div>
@@ -131,29 +141,20 @@
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Auto hide toast setelah 3 detik
-       window.addEventListener('DOMContentLoaded', function () {
+        window.addEventListener('load', function () {
             const toast = document.getElementById('successToast');
-            const closeBtn = document.getElementById('closeToastBtn');
-
             if (toast) {
-                // Auto hide 3 detik
                 setTimeout(function () {
                     toast.style.display = 'none';
                 }, 3000);
             }
-
-            if (closeBtn) {
-                closeBtn.addEventListener('click', function () {
-                    toast.style.display = 'none';
-                });
-            }
         });
 
-    function closeToast() {
-        const toast = document.getElementById('successToast');
-        if (toast) toast.classList.remove('show');
-    }
+        function konfirmasiHapus(id, nama, url) {
+            document.getElementById('namaHapus').innerText = nama;
+            document.getElementById('formHapus').action = url;
+            new bootstrap.Modal(document.getElementById('modalHapus')).show();
+        }
     </script>
 </body>
 
