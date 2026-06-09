@@ -94,7 +94,6 @@ class AttendanceController extends Controller
 
     public function update(Request $request, $id)
     {
-        
         $request->merge([
             'jam_masuk' => \Carbon\Carbon::parse($request->jam_masuk)->format('H:i'),
         ]);
@@ -103,7 +102,8 @@ class AttendanceController extends Controller
 
         $request->validate([
             'nama_pegawai'         => ['required', 'regex:/^[A-Za-z\s]+$/'],
-            'nip'                  => 'required|numeric|unique:attendances,nip',
+            // PERBAIKAN: Ditambahkan ,$id di akhir agar tidak mentok error unique saat update
+            'nip'                  => 'required|numeric|unique:attendances,nip,' . $id,
             'tanggal'              => 'required|date',
             'jam_masuk'            => 'required|date_format:H:i',
             'jam_pulang'           => 'nullable',
