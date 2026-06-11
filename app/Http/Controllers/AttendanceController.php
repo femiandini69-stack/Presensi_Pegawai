@@ -98,11 +98,14 @@ class AttendanceController extends Controller
 
     public function update(Request $request, $id)
     {
+
         // KUNCI PROTEKSI: Hanya Admin yang boleh mengeksekusi update data
         if (auth()->user()->role !== 'admin') {
             abort(403, 'Akses Ditolak');
         }
         
+
+
         $request->merge([
             'jam_masuk' => \Carbon\Carbon::parse($request->jam_masuk)->format('H:i'),
         ]);
@@ -111,7 +114,12 @@ class AttendanceController extends Controller
 
         $request->validate([
             'nama_pegawai'         => ['required', 'regex:/^[A-Za-z\s]+$/'],
+
             'nip'                  => 'required|numeric|unique:attendances,nip,' . $id, // Diperbaiki agar NIP tidak bentrok saat edit data sendiri
+
+            // PERBAIKAN: Ditambahkan ,$id di akhir agar tidak mentok error unique saat update
+            'nip'                  => 'required|numeric|unique:attendances,nip,' . $id,
+
             'tanggal'              => 'required|date',
             'jam_masuk'            => 'required|date_format:H:i',
             'jam_pulang'           => 'nullable',
