@@ -1,17 +1,30 @@
 <?php
 
+use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AttendanceController;
-use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\DashboardController;
+
+/*
+|--------------------------------------------------------------------------
+| Web Routes
+|--------------------------------------------------------------------------
+*/
 
 Route::get('/', function () {
     return view('welcome');
 });
 
-Route::get('/dashboard', function () {
-    return view('dashboard');
-})->middleware(['auth', 'verified'])->name('dashboard');
+/*
+| DASHBOARD (FIXED)
+*/
+Route::get('/dashboard', [DashboardController::class, 'index'])
+    ->middleware(['auth', 'verified'])
+    ->name('dashboard');
 
+/*
+| AUTH AREA
+*/
 Route::middleware(['auth'])->group(function () {
 
     Route::resource('attendance', AttendanceController::class);
@@ -21,4 +34,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
+/*
+| AUTH ROUTES (BREEZE)
+*/
 require __DIR__.'/auth.php';
