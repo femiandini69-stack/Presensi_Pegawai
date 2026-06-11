@@ -23,9 +23,7 @@
 
                     {{-- NAMA --}}
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="color:#0E1A2B;">
-                            Nama Lengkap Pegawai
-                        </label>
+                        <label class="form-label fw-bold">Nama Lengkap Pegawai</label>
 
                         <input type="text"
                                class="form-control @error('nama_pegawai') is-invalid @enderror"
@@ -37,11 +35,9 @@
                         @enderror
                     </div>
 
-                    {{-- NIP (TAMBAHAN PENTING) --}}
+                    {{-- NIP --}}
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="color:#0E1A2B;">
-                            NIP
-                        </label>
+                        <label class="form-label fw-bold">NIP</label>
 
                         <input type="text"
                                class="form-control @error('nip') is-invalid @enderror"
@@ -55,9 +51,7 @@
 
                     {{-- TANGGAL --}}
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="color:#0E1A2B;">
-                            Tanggal
-                        </label>
+                        <label class="form-label fw-bold">Tanggal</label>
 
                         <input type="date"
                                class="form-control @error('tanggal') is-invalid @enderror"
@@ -69,47 +63,29 @@
                         @enderror
                     </div>
 
-                    {{-- JAM --}}
-                    <div class="row">
+                    {{-- JAM MASUK (SAJA) --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold">Jam Masuk</label>
 
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold" style="color:#0E1A2B;">
-                                Jam Masuk
-                            </label>
+                        <input type="time"
+                               class="form-control @error('jam_masuk') is-invalid @enderror"
+                               name="jam_masuk"
+                               value="{{ old('jam_masuk', $attendance->jam_masuk) }}">
 
-                            <input type="time"
-                                   class="form-control"
-                                   name="jam_masuk"
-                                   value="{{ old('jam_masuk', $attendance->jam_masuk) }}">
-                        </div>
-
-                        <div class="col-md-6 mb-3">
-                            <label class="form-label fw-bold" style="color:#0E1A2B;">
-                                Jam Pulang
-                            </label>
-
-                            <input type="time"
-                                   class="form-control"
-                                   name="jam_pulang"
-                                   value="{{ old('jam_pulang', $attendance->jam_pulang) }}">
-                        </div>
-
+                        @error('jam_masuk')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
                     </div>
 
                     {{-- KETERANGAN --}}
                     <div class="mb-3">
-                        <label class="form-label fw-bold" style="color:#0E1A2B;">
-                            Keterangan
-                        </label>
+                        <label class="form-label fw-bold">Keterangan</label>
 
                         <select class="form-select" name="keterangan_kehadiran">
 
                             <option value="Hadir" {{ old('keterangan_kehadiran', $attendance->keterangan_kehadiran) == 'Hadir' ? 'selected' : '' }}>Hadir</option>
-
                             <option value="Sakit" {{ old('keterangan_kehadiran', $attendance->keterangan_kehadiran) == 'Sakit' ? 'selected' : '' }}>Sakit</option>
-
                             <option value="Izin" {{ old('keterangan_kehadiran', $attendance->keterangan_kehadiran) == 'Izin' ? 'selected' : '' }}>Izin</option>
-
                             <option value="Dinas Luar" {{ old('keterangan_kehadiran', $attendance->keterangan_kehadiran) == 'Dinas Luar' ? 'selected' : '' }}>Dinas Luar</option>
 
                         </select>
