@@ -1,160 +1,44 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <head>
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <meta name="csrf-token" content="{{ csrf_token() }}">
 
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>IT-TECH LOG SYSTEM</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #E6EEF6;
-            font-family: 'Segoe UI', sans-serif;
-        }
+        <title>{{ config('app.name', 'Laravel') }}</title>
 
-        .navbar {
-            background: linear-gradient(to right, #3c5e82, #5e82ac);
-        }
+        <!-- Fonts -->
+        <link rel="preconnect" href="https://fonts.bunny.net">
+        <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
 
-        .navbar-brand {
-            color: white !important;
-            font-weight: bold;
-            font-size: 22px;
-            letter-spacing: 1px;
-        }
+        <!-- Bootstrap -->
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
 
-        .card {
-            border: none;
-            border-radius: 18px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        }
+        <!-- Scripts -->
+        @vite(['resources/css/app.css', 'resources/js/app.js'])
+    </head>
+    <body class="font-sans antialiased">
+        <div class="min-h-screen bg-gray-100">
+            @include('layouts.navigation')
 
-        .table thead th {
-            background-color: #425A73 !important;
-            color: white !important;
-            border: none;
-        }
+            <!-- Page Heading -->
+            @isset($header)
+                <header class="bg-white shadow">
+                    <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
+                        {{ $header }}
+                    </div>
+                </header>
+            @endisset
 
-        .table {
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .form-control {
-            border-radius: 10px;
-            border: 1px solid #BFC9D9;
-        }
-
-        .form-control:focus {
-            border-color: #6E3DAA;
-            box-shadow: 0 0 0 0.15rem rgba(110, 61, 170, 0.25);
-        }
-
-        h5 {
-            color: #0E1A2B;
-            font-weight: bold;
-        }
-
-        /* Toast */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 9999;
-        }
-
-        .toast-success {
-            background-color: #d1f5e0;
-            border-left: 5px solid #198754;
-            color: #0f5132;
-            border-radius: 10px;
-            min-width: 280px;
-        }
-    </style>
-</head>
-
-<body>
-
-    <nav class="navbar navbar-expand-lg shadow-sm mb-4">
-        <div class="container">
-            <a class="navbar-brand" href="#">
-                Sistem Catatan Kehadiran Pegawai
-            </a>
-        </div>
-    </nav>
-
-    {{-- TOAST ALERT --}}
-    @if(session('success'))
-        <div class="toast-container">
-            <div id="successToast" class="toast toast-success p-3 d-flex align-items-center gap-2 shadow show" role="alert">
-                <span style="font-size:20px;">✅</span>
-                <div class="fw-semibold">{{ session('success') }}</div>
-                <button type="button" class="btn-close ms-auto" id="closeToastBtn"></button>
-            </div>
-        </div>
-    @endif
-
-    {{-- MODAL KONFIRMASI HAPUS --}}
-    <div class="modal fade" id="modalHapus" tabindex="-1">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content rounded-4 border-0 shadow">
-                <div class="modal-header border-0" style="background-color:#fdecea;">
-                    <h6 class="modal-title fw-bold" style="color:#dc3545;">
-                        ⚠️ Konfirmasi Hapus
-                    </h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body text-center py-4">
-                    <p class="mb-1">Apakah Anda yakin ingin menghapus catatan kehadiran</p>
-                    <p class="fw-bold fs-5 mb-0" id="namaHapus" style="color:#425A73;"></p>
-                </div>
-                <div class="modal-footer border-0 justify-content-center gap-2">
-                    <button type="button" class="btn fw-bold px-4" style="background-color:#BFC9D9; color:#0E1A2B;"
-                        data-bs-dismiss="modal">
-                        Batal
-                    </button>
-                    <form id="formHapus" method="POST" class="d-inline">
-                        @csrf
-                        @method('DELETE')
-                        <button type="submit" class="btn fw-bold px-4 text-white" style="background-color:#dc3545;">
-                            Ya, Hapus
-                        </button>
-                    </form>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="container py-3">
+            <!-- Page Content -->
+            <main>
+    <div class="container mt-4">
         @yield('content')
     </div>
+</main>
+        </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Auto hide toast setelah 3 detik
-       window.addEventListener('DOMContentLoaded', function () {
-            const toast = document.getElementById('successToast');
-            const closeBtn = document.getElementById('closeToastBtn');
+        <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
-            if (toast) {
-                // Auto hide 3 detik
-                setTimeout(function () {
-                    toast.style.display = 'none';
-                }, 3000);
-            }
-
-            if (closeBtn) {
-                closeBtn.addEventListener('click', function () {
-                    toast.style.display = 'none';
-                });
-            }
-        });
-
-    function closeToast() {
-        const toast = document.getElementById('successToast');
-        if (toast) toast.classList.remove('show');
-    }
-    </script>
-</body>
-
+    </body>
 </html>

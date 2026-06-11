@@ -51,21 +51,24 @@ class AttendanceController extends Controller
             'nama_pegawai'         => ['required', 'regex:/^[A-Za-z\s]+$/'],
             'nip'                  => 'required|numeric|unique:attendances,nip',
             'tanggal'              => 'required|date',
-            'jam_masuk'            => 'required|date_format:H:i|after_or_equal:07:00',
+            'jam_masuk'            => 'required|date_format:H:i',
             'jam_pulang'           => 'nullable',
             'keterangan_kehadiran' => 'required'
         ], [
-            'nama_pegawai.required'        => 'Nama pegawai wajib diisi',
-            'nama_pegawai.regex'           => 'Nama hanya boleh huruf, tidak boleh angka',
-            'nip.required'                 => 'NIP wajib diisi',
-            'nip.numeric'                  => 'NIP harus berupa angka saja',
-            'nip.unique'                   => 'NIP sudah terdaftar',
-            'tanggal.required'             => 'Tanggal wajib diisi',
-            'tanggal.date'                 => 'Format tanggal tidak valid',
-            'jam_masuk.required'           => 'Jam masuk wajib diisi',
-            'jam_masuk.after_or_equal'     => 'Jam masuk tidak boleh sebelum 07:00',
-            'keterangan_kehadiran.required'=> 'Status kehadiran wajib dipilih',
+            'nama_pegawai.required'         => 'Nama pegawai wajib diisi',
+            'nama_pegawai.regex'            => 'Nama hanya boleh huruf, tidak boleh angka',
+            'nip.required'                  => 'NIP wajib diisi',
+            'nip.numeric'                   => 'NIP harus berupa angka saja',
+            'nip.unique'                    => 'NIP sudah terdaftar',
+            'tanggal.required'              => 'Tanggal wajib diisi',
+            'tanggal.date'                  => 'Format tanggal tidak valid',
+            'jam_masuk.required'            => 'Jam masuk wajib diisi',
+            'keterangan_kehadiran.required' => 'Status kehadiran wajib dipilih',
         ]);
+
+        if ($request->jam_masuk < '07:00') {
+            return back()->withErrors(['jam_masuk' => 'Jam masuk tidak boleh sebelum 07:00'])->withInput();
+        }
 
         $data = $request->all();
 
@@ -84,12 +87,22 @@ class AttendanceController extends Controller
 
     public function edit($id)
     {
+        // KUNCI PROTEKSI: Hanya Admin yang boleh masuk ke halaman edit
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Akses Ditolak');
+        }
+
         $attendance = Attendance::findOrFail($id);
         return view('attendance.edit', compact('attendance'));
     }
 
     public function update(Request $request, $id)
     {
+        // KUNCI PROTEKSI: Hanya Admin yang boleh mengeksekusi update data
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Akses Ditolak');
+        }
+        
         $request->merge([
             'jam_masuk' => \Carbon\Carbon::parse($request->jam_masuk)->format('H:i'),
         ]);
@@ -98,21 +111,26 @@ class AttendanceController extends Controller
 
         $request->validate([
             'nama_pegawai'         => ['required', 'regex:/^[A-Za-z\s]+$/'],
-            'nip'                  => 'required|numeric|unique:attendances,nip,' . $id,
+            'nip'                  => 'required|numeric|unique:attendances,nip,' . $id, // Diperbaiki agar NIP tidak bentrok saat edit data sendiri
             'tanggal'              => 'required|date',
-            'jam_masuk'            => 'required|date_format:H:i|after_or_equal:07:00',
+            'jam_masuk'            => 'required|date_format:H:i',
             'jam_pulang'           => 'nullable',
             'keterangan_kehadiran' => 'required'
         ], [
-            'nama_pegawai.required'        => 'Nama pegawai wajib diisi',
-            'nama_pegawai.regex'           => 'Nama hanya boleh huruf, tidak boleh angka',
-            'nip.numeric'                  => 'NIP harus angka saja',
-            'nip.unique'                   => 'NIP sudah digunakan',
-            'tanggal.required'             => 'Tanggal wajib diisi',
-            'jam_masuk.required'           => 'Jam masuk wajib diisi',
-            'jam_masuk.after_or_equal'     => 'Jam masuk tidak boleh sebelum 07:00',
-            'keterangan_kehadiran.required'=> 'Status kehadiran wajib dipilih',
+            'nama_pegawai.required'         => 'Nama pegawai wajib diisi',
+            'nama_pegawai.regex'            => 'Nama hanya boleh huruf, tidak boleh angka',
+            'nip.required'                  => 'NIP wajib diisi',
+            'nip.numeric'                   => 'NIP harus berupa angka saja',
+            'nip.unique'                    => 'NIP sudah terdaftar',
+            'tanggal.required'              => 'Tanggal wajib diisi',
+            'tanggal.date'                  => 'Format tanggal tidak valid',
+            'jam_masuk.required'            => 'Jam masuk wajib diisi',
+            'keterangan_kehadiran.required' => 'Status kehadiran wajib dipilih',
         ]);
+
+        if ($request->jam_masuk < '07:00') {
+            return back()->withErrors(['jam_masuk' => 'Jam masuk tidak boleh sebelum 07:00'])->withInput();
+        }
 
         $jamPulang = $request->jam_pulang ?: $this->hitungJamPulang(
             $request->jam_masuk,
@@ -134,6 +152,11 @@ class AttendanceController extends Controller
 
     public function destroy($id)
     {
+        // KUNCI PROTEKSI: Hanya Admin yang boleh menghapus data
+        if (auth()->user()->role !== 'admin') {
+            abort(403, 'Akses Ditolak');
+        }
+
         Attendance::findOrFail($id)->delete();
         return redirect()->route('attendance.index')
             ->with('success', 'Data berhasil dihapus!');
