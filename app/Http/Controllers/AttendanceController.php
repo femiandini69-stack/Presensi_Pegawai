@@ -25,7 +25,6 @@ class AttendanceController extends Controller
         }
 
         $attendances = $query->get();
-
         return view('attendance.index', compact('attendances'));
     }
 
@@ -37,45 +36,47 @@ class AttendanceController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama_pegawai'         => ['required', 'regex:/^[A-Za-z\s]+$/'],
-            'nip'                  => 'required|numeric|unique:attendances,nip',
+            'nama_pegawai'         => 'required|string|max:255',
+            'nip'                  => 'required|numeric', 
             'tanggal'              => 'required|date',
             'jam_masuk'            => 'required', 
             'keterangan_kehadiran' => 'required',
-            'bukti'                => 'nullable|image|mimes:jpg,jpeg,png,pdf|max:2048'
+            'bukti'                => 'required|image|mimes:jpg,jpeg,png|max:2048' 
+        ], [
+            'bukti.required'       => 'Foto harus diisi!',
+            'bukti.image'          => 'File yang diunggah harus berupa gambar!',
+            'bukti.mimes'          => 'Format foto harus berupa jpg, jpeg, atau png!',
+            'bukti.max'            => 'Ukuran foto maksimal adalah 2MB!',
         ]);
 
         if ($request->jam_masuk < '07:00') {
-            return back()->withErrors([
-                'jam_masuk' => 'Jam masuk tidak boleh sebelum 07:00'
-            ])->withInput();
+            return back()->withErrors(['jam_masuk' => 'Jam masuk tidak boleh sebelum 07:00'])->withInput();
         }
 
         $data = [
-            'nama_pegawai' => $request->nama_pegawai,
-            'nip' => $request->nip,
-            'tanggal' => $request->tanggal,
-            'jam_masuk' => $request->jam_masuk,
+            'nama_pegawai'         => $request->nama_pegawai,
+            'nip'                  => $request->nip,
+            'tanggal'              => $request->tanggal,
+            'jam_masuk'            => $request->jam_masuk,
             'keterangan_kehadiran' => $request->keterangan_kehadiran,
         ];
 
-        // upload bukti
         if ($request->hasFile('bukti')) {
             $file = $request->file('bukti');
-            $filename = time() . '_' . $file->getClientOriginalName();
+            $filename = time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('bukti'), $filename);
             $data['bukti'] = $filename;
         }
 
-        // jam pulang otomatis
-        $data['jam_pulang'] = Carbon::parse($request->jam_masuk)
-            ->addHours(8)
-            ->format('H:i');
+        $data['jam_pulang'] = Carbon::parse($request->jam_masuk)->addHours(8)->format('H:i');
 
         Attendance::create($data);
+        return redirect()->route('attendance.index')->with('success', 'Data berhasil ditambahkan!');
+    }
 
-        return redirect()->route('attendance.index')
-            ->with('success', 'Data berhasil ditambahkan!');
+    public function show($id)
+    {
+        return redirect()->route('attendance.index');
     }
 
     public function edit($id)
@@ -89,21 +90,23 @@ class AttendanceController extends Controller
         $attendance = Attendance::findOrFail($id);
 
         $request->validate([
-            'nama_pegawai'         => ['required', 'regex:/^[A-Za-z\s]+$/'],
-            'nip'                  => 'required|numeric|unique:attendances,nip,' . $id,
+            'nama_pegawai'         => 'required|string|max:255', 
+            'nip'                  => 'required|numeric',
             'tanggal'              => 'required|date',
             'jam_masuk'            => 'required', 
             'jam_pulang'           => 'nullable',
             'keterangan_kehadiran' => 'required',
-            'bukti'                => 'nullable|image|mimes:jpg,jpeg,png,pdf|max:2048'
+            'bukti'                => 'nullable|image|mimes:jpg,jpeg,png|max:2048' 
+        ], [
+            'bukti.image'          => 'File yang diunggah harus berupa gambar!',
+            'bukti.mimes'          => 'Format foto harus berupa jpg, jpeg, atau png!',
+            'bukti.max'            => 'Ukuran foto maksimal adalah 2MB!',
         ]);
 
         $jam_masuk_format = Carbon::parse($request->jam_masuk)->format('H:i');
 
         if ($jam_masuk_format < '07:00') {
-            return back()->withErrors([
-                'jam_masuk' => 'Jam masuk tidak boleh sebelum 07:00'
-            ])->withInput();
+            return back()->withErrors(['jam_masuk' => 'Jam masuk tidak boleh sebelum 07:00'])->withInput();
         }
 
         $data = [
@@ -114,22 +117,17 @@ class AttendanceController extends Controller
             'keterangan_kehadiran' => $request->keterangan_kehadiran,
         ];
 
-        // kalau upload bukti baru
         if ($request->hasFile('bukti')) {
-
-            // hapus file lama
             if ($attendance->bukti && File::exists(public_path('bukti/' . $attendance->bukti))) {
                 File::delete(public_path('bukti/' . $attendance->bukti));
             }
 
             $file = $request->file('bukti');
-            $filename = time() . '_' . $file->getClientOriginalName();
+            $filename = time() . '.' . $file->getClientOriginalExtension();
             $file->move(public_path('bukti'), $filename);
-
             $data['bukti'] = $filename;
         }
 
-        // Logika Pengisian Jam Pulang yang Dinamis saat di-Edit
         if ($request->filled('jam_pulang')) {
             $data['jam_pulang'] = Carbon::parse($request->jam_pulang)->format('H:i');
         } else {
@@ -137,9 +135,7 @@ class AttendanceController extends Controller
         }
 
         $attendance->update($data);
-
-        return redirect()->route('attendance.index')
-            ->with('success', 'Data berhasil diperbarui!');
+        return redirect()->route('attendance.index')->with('success', 'Data berhasil diperbarui!');
     }
 
     public function destroy($id)
@@ -151,8 +147,6 @@ class AttendanceController extends Controller
         }
 
         $attendance->delete();
-
-        return redirect()->route('attendance.index')
-            ->with('success', 'Data berhasil dihapus!');
+        return redirect()->route('attendance.index')->with('success', 'Data berhasil dihapus!');
     }
 }

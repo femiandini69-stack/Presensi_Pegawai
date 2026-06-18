@@ -1,55 +1,26 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\AttendanceController;
-use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\PresensiController;
+use App\Http\Controllers\DashboardController; // <--- WAJIB TAMBAHKAN INI
 
-/*
-|--------------------------------------------------------------------------
-| Web Routes
-|--------------------------------------------------------------------------
-*/
+Route::get('/', function () { return view('welcome'); });
 
-Route::get('/', function () {
-    return view('welcome');
+Route::middleware(['auth', 'verified'])->group(function () {
+    // Rute dashboard sekarang memanggil DashboardController
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard'); 
 });
 
-/*
-| DASHBOARD
-*/
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth', 'verified'])
-    ->name('dashboard');
-
-/*
-| AUTH AREA
-*/
 Route::middleware(['auth'])->group(function () {
+    Route::get('/attendance', [AttendanceController::class, 'index'])->name('attendance.index');
 
-    // Attendance (CRUD)
-    Route::resource('attendance', AttendanceController::class);
-
-    // Presensi (manual route)
-    Route::get('/presensi/create', [PresensiController::class, 'create'])
-        ->name('presensi.create');
-
-    Route::post('/presensi', [PresensiController::class, 'store'])
-        ->name('presensi.store');
-
-    // Profile
-    Route::get('/profile', [ProfileController::class, 'edit'])
-        ->name('profile.edit');
-
-    Route::patch('/profile', [ProfileController::class, 'update'])
-        ->name('profile.update');
-
-    Route::delete('/profile', [ProfileController::class, 'destroy'])
-        ->name('profile.destroy');
+    Route::middleware(['admin'])->group(function () {
+        Route::get('/attendance/create', [AttendanceController::class, 'create'])->name('attendance.create');
+        Route::post('/attendance', [AttendanceController::class, 'store'])->name('attendance.store');
+        Route::get('/attendance/{id}/edit', [AttendanceController::class, 'edit'])->name('attendance.edit');
+        Route::put('/attendance/{id}', [AttendanceController::class, 'update'])->name('attendance.update');
+        Route::delete('/attendance/{id}', [AttendanceController::class, 'destroy'])->name('attendance.destroy');
+    });
 });
 
-/*
-| AUTH ROUTES (BREEZE)
-*/
 require __DIR__.'/auth.php';

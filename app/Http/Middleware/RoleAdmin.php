@@ -13,16 +13,12 @@ class RoleAdmin
      */
     public function handle(Request $request, Closure $next): Response
     {
-        // cek user login
-        if (!auth()->check()) {
-            abort(403, 'Akses Ditolak. Silakan login terlebih dahulu.');
+        // 1. Cek apakah user sudah login, dan apakah role-nya 'admin'
+        if (auth()->check() && auth()->user()->role === 'admin') {
+            return $next($request); 
         }
 
-        // cek role admin
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Akses Ditolak. Anda bukan Administrator.');
-        }
-
-        return $next($request);
+        // 2. Jika bukan admin, lempar kembali ke dashboard dengan pesan error
+        return redirect()->route('dashboard')->with('error', 'Hanya Admin yang dapat mengakses halaman tersebut!');
     }
 }

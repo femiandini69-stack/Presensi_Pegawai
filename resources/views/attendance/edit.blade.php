@@ -16,6 +16,18 @@
 
             <div class="card-body">
 
+                {{-- DETEKTOR ERROR GLOBAL --}}
+                @if ($errors->any())
+                    <div class="alert alert-danger shadow-sm border-0 rounded-3 mb-4">
+                        <h6 class="fw-bold mb-2"><i class="bi bi-exclamation-triangle-fill"></i> Gagal Memperbarui Data:</h6>
+                        <ul class="mb-0 ps-3">
+                            @foreach ($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                @endif
+
                 <form action="{{ route('attendance.update', $attendance->id) }}"
                       method="POST"
                       enctype="multipart/form-data">
@@ -153,7 +165,6 @@ document.addEventListener("DOMContentLoaded", function () {
 
     if (jamMasuk && jamPulang) {
         function hitungJamPulang() {
-            // Jalankan otomatis kalkulasi HANYA jika jam pulang belum terisi / kosong semula
             if (jamMasuk.value && !jamPulang.value) {
                 let [jam, menit] = jamMasuk.value.split(':').map(Number);
                 let date = new Date();
@@ -169,7 +180,6 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         jamMasuk.addEventListener('input', function() {
-            // Jika user sengaja mengubah jam masuk, kosongkan dulu jam pulang lama agar terhitung baru
             jamPulang.value = '';
             hitungJamPulang();
         });

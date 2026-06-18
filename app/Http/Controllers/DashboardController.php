@@ -2,15 +2,15 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $users = User::with('divisi')->get();
-
+        // Mengambil data user untuk dikirim ke view
+        $users = User::with('divisi')->get(); 
         return view('dashboard', compact('users'));
     }
 }
