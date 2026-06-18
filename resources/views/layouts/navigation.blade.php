@@ -1,7 +1,6 @@
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#425A73;">
     <div class="container">
 
-```
     <a class="navbar-brand fw-bold" href="{{ route('dashboard') }}">
         Sistem Presensi
     </a>
@@ -78,6 +77,5 @@
     </div>
 
 </div>
-```
 
 </nav>

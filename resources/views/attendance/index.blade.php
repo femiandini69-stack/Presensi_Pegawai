@@ -1,4 +1,3 @@
-```php
 @extends('layouts.app')
 
 @section('content')
@@ -120,7 +119,7 @@
                                 <td>{{ $item->nama_pegawai }}</td>
                                 <td>{{ $item->nip }}</td>
                                 <td>{{ $item->tanggal }}</td>
-                                <td>{{ $item->jam_masuk }}</td>
+                                <td>{{ $item->jam_masuk ? \Carbon\Carbon::parse($item->jam_masuk)->format('H:i') : '-' }}</td>
 
                                 {{-- JAM PULANG --}}
                                 <td>
@@ -299,4 +298,3 @@
 
 </div>
 @endsection
-```

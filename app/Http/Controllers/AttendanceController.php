@@ -40,9 +40,9 @@ class AttendanceController extends Controller
             'nama_pegawai'         => ['required', 'regex:/^[A-Za-z\s]+$/'],
             'nip'                  => 'required|numeric|unique:attendances,nip',
             'tanggal'              => 'required|date',
-            'jam_masuk'            => 'required|date_format:H:i',
+            'jam_masuk'            => 'required', 
             'keterangan_kehadiran' => 'required',
-            'bukti'                => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'bukti'                => 'nullable|image|mimes:jpg,jpeg,png,pdf|max:2048'
         ]);
 
         if ($request->jam_masuk < '07:00') {
@@ -92,22 +92,25 @@ class AttendanceController extends Controller
             'nama_pegawai'         => ['required', 'regex:/^[A-Za-z\s]+$/'],
             'nip'                  => 'required|numeric|unique:attendances,nip,' . $id,
             'tanggal'              => 'required|date',
-            'jam_masuk'            => 'required|date_format:H:i',
+            'jam_masuk'            => 'required', 
+            'jam_pulang'           => 'nullable',
             'keterangan_kehadiran' => 'required',
-            'bukti'                => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            'bukti'                => 'nullable|image|mimes:jpg,jpeg,png,pdf|max:2048'
         ]);
 
-        if ($request->jam_masuk < '07:00') {
+        $jam_masuk_format = Carbon::parse($request->jam_masuk)->format('H:i');
+
+        if ($jam_masuk_format < '07:00') {
             return back()->withErrors([
                 'jam_masuk' => 'Jam masuk tidak boleh sebelum 07:00'
             ])->withInput();
         }
 
         $data = [
-            'nama_pegawai' => $request->nama_pegawai,
-            'nip' => $request->nip,
-            'tanggal' => $request->tanggal,
-            'jam_masuk' => $request->jam_masuk,
+            'nama_pegawai'         => $request->nama_pegawai,
+            'nip'                  => $request->nip,
+            'tanggal'              => $request->tanggal,
+            'jam_masuk'            => $jam_masuk_format,
             'keterangan_kehadiran' => $request->keterangan_kehadiran,
         ];
 
@@ -126,9 +129,12 @@ class AttendanceController extends Controller
             $data['bukti'] = $filename;
         }
 
-        $data['jam_pulang'] = Carbon::parse($request->jam_masuk)
-            ->addHours(8)
-            ->format('H:i');
+        // Logika Pengisian Jam Pulang yang Dinamis saat di-Edit
+        if ($request->filled('jam_pulang')) {
+            $data['jam_pulang'] = Carbon::parse($request->jam_pulang)->format('H:i');
+        } else {
+            $data['jam_pulang'] = Carbon::parse($request->jam_masuk)->addHours(8)->format('H:i');
+        }
 
         $attendance->update($data);
 
