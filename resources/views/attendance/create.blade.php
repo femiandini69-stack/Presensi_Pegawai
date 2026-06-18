@@ -1,3 +1,4 @@
+```php
 @extends('layouts.app')
 
 @section('content')
@@ -17,7 +18,9 @@
 
             <div class="card-body">
 
-                <form action="{{ route('attendance.store') }}" method="POST">
+                <form action="{{ route('attendance.store') }}"
+                      method="POST"
+                      enctype="multipart/form-data">
                     @csrf
 
                     {{-- NAMA --}}
@@ -126,6 +129,26 @@
                         @enderror
                     </div>
 
+                    {{-- BUKTI FOTO --}}
+                    <div class="mb-3">
+                        <label class="form-label fw-bold" style="color:#0E1A2B;">
+                            Bukti Kehadiran
+                        </label>
+
+                        <input type="file"
+                               name="bukti"
+                               accept="image/*"
+                               class="form-control @error('bukti') is-invalid @enderror">
+
+                        <small class="text-muted">
+                            Upload foto bukti kehadiran (jpg, jpeg, png).
+                        </small>
+
+                        @error('bukti')
+                            <div class="invalid-feedback">{{ $message }}</div>
+                        @enderror
+                    </div>
+
                     {{-- BUTTON --}}
                     <div class="mt-4 d-flex justify-content-between">
 
@@ -151,3 +174,4 @@
     </div>
 </div>
 @endsection
+```

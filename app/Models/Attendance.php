@@ -16,5 +16,6 @@ class Attendance extends Model
         'jam_masuk',
         'jam_pulang',
         'keterangan_kehadiran',
+        'bukti',
     ];
 }

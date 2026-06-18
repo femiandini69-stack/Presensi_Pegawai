@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Attendance;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\File;
 
 class AttendanceController extends Controller
 {
@@ -24,6 +25,7 @@ class AttendanceController extends Controller
         }
 
         $attendances = $query->get();
+
         return view('attendance.index', compact('attendances'));
     }
 
@@ -39,16 +41,33 @@ class AttendanceController extends Controller
             'nip'                  => 'required|numeric|unique:attendances,nip',
             'tanggal'              => 'required|date',
             'jam_masuk'            => 'required|date_format:H:i',
-            'keterangan_kehadiran' => 'required'
+            'keterangan_kehadiran' => 'required',
+            'bukti'                => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
         if ($request->jam_masuk < '07:00') {
-            return back()->withErrors(['jam_masuk' => 'Jam masuk tidak boleh sebelum 07:00'])->withInput();
+            return back()->withErrors([
+                'jam_masuk' => 'Jam masuk tidak boleh sebelum 07:00'
+            ])->withInput();
         }
 
-        $data = $request->all();
+        $data = [
+            'nama_pegawai' => $request->nama_pegawai,
+            'nip' => $request->nip,
+            'tanggal' => $request->tanggal,
+            'jam_masuk' => $request->jam_masuk,
+            'keterangan_kehadiran' => $request->keterangan_kehadiran,
+        ];
 
-        
+        // upload bukti
+        if ($request->hasFile('bukti')) {
+            $file = $request->file('bukti');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('bukti'), $filename);
+            $data['bukti'] = $filename;
+        }
+
+        // jam pulang otomatis
         $data['jam_pulang'] = Carbon::parse($request->jam_masuk)
             ->addHours(8)
             ->format('H:i');
@@ -61,51 +80,57 @@ class AttendanceController extends Controller
 
     public function edit($id)
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Akses Ditolak');
-        }
-
         $attendance = Attendance::findOrFail($id);
         return view('attendance.edit', compact('attendance'));
     }
 
     public function update(Request $request, $id)
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Akses Ditolak');
-        }
-
         $attendance = Attendance::findOrFail($id);
-
-        $request->merge([
-            'jam_masuk' => Carbon::parse($request->jam_masuk)->format('H:i'),
-        ]);
 
         $request->validate([
             'nama_pegawai'         => ['required', 'regex:/^[A-Za-z\s]+$/'],
             'nip'                  => 'required|numeric|unique:attendances,nip,' . $id,
             'tanggal'              => 'required|date',
             'jam_masuk'            => 'required|date_format:H:i',
-            'keterangan_kehadiran' => 'required'
+            'keterangan_kehadiran' => 'required',
+            'bukti'                => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
         if ($request->jam_masuk < '07:00') {
-            return back()->withErrors(['jam_masuk' => 'Jam masuk tidak boleh sebelum 07:00'])->withInput();
+            return back()->withErrors([
+                'jam_masuk' => 'Jam masuk tidak boleh sebelum 07:00'
+            ])->withInput();
         }
 
- 
-        $jamPulang = Carbon::parse($request->jam_masuk)
+        $data = [
+            'nama_pegawai' => $request->nama_pegawai,
+            'nip' => $request->nip,
+            'tanggal' => $request->tanggal,
+            'jam_masuk' => $request->jam_masuk,
+            'keterangan_kehadiran' => $request->keterangan_kehadiran,
+        ];
+
+        // kalau upload bukti baru
+        if ($request->hasFile('bukti')) {
+
+            // hapus file lama
+            if ($attendance->bukti && File::exists(public_path('bukti/' . $attendance->bukti))) {
+                File::delete(public_path('bukti/' . $attendance->bukti));
+            }
+
+            $file = $request->file('bukti');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('bukti'), $filename);
+
+            $data['bukti'] = $filename;
+        }
+
+        $data['jam_pulang'] = Carbon::parse($request->jam_masuk)
             ->addHours(8)
             ->format('H:i');
 
-        $attendance->update([
-            'nama_pegawai'         => $request->nama_pegawai,
-            'nip'                  => $request->nip,
-            'tanggal'              => $request->tanggal,
-            'jam_masuk'            => $request->jam_masuk,
-            'jam_pulang'           => $jamPulang,
-            'keterangan_kehadiran' => $request->keterangan_kehadiran,
-        ]);
+        $attendance->update($data);
 
         return redirect()->route('attendance.index')
             ->with('success', 'Data berhasil diperbarui!');
@@ -113,11 +138,13 @@ class AttendanceController extends Controller
 
     public function destroy($id)
     {
-        if (auth()->user()->role !== 'admin') {
-            abort(403, 'Akses Ditolak');
+        $attendance = Attendance::findOrFail($id);
+
+        if ($attendance->bukti && File::exists(public_path('bukti/' . $attendance->bukti))) {
+            File::delete(public_path('bukti/' . $attendance->bukti));
         }
 
-        Attendance::findOrFail($id)->delete();
+        $attendance->delete();
 
         return redirect()->route('attendance.index')
             ->with('success', 'Data berhasil dihapus!');
