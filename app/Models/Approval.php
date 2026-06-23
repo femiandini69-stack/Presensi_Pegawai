@@ -5,24 +5,23 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Attendance extends Model
+class Approval extends Model
 {
     use HasFactory;
 
-    protected $table = 'attendances';
-
+    
+    protected $table = 'approvals';
     protected $fillable = [
         'pegawai_id',
-        'tanggal',
-        'jam_masuk',
-        'jam_pulang',
-        'keterangan_kehadiran',
-        'bukti'
+        'jenis',
+        'jumlah_hari',
+        'alasan',
+        'status',
     ];
 
-
+    
     public function pegawai()
     {
-        return $this->belongsTo(Pegawai::class);
+        return $this->belongsTo(User::class, 'pegawai_id');
     }
 }

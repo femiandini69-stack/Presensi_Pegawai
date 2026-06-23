@@ -10,14 +10,14 @@ return new class extends Migration
     {
         Schema::create('attendances', function (Blueprint $table) {
             $table->id();
-            $table->string('nama_pegawai');
-            $table->string('nip'); 
-            $table->date('tanggal');
-            $table->time('jam_masuk');
-            $table->time('jam_pulang')->nullable();
-            $table->enum('keterangan_kehadiran', ['Hadir', 'Sakit', 'Izin', 'Dinas Luar']);
-            $table->string('bukti')->nullable(); 
-            $table->timestamps();
+        $table->foreignId('pegawai_id')->constrained('pegawais')->cascadeOnDelete();
+        $table->date('tanggal');
+        $table->time('jam_masuk')->nullable();
+        $table->time('jam_pulang')->nullable();
+        $table->enum('status', ['hadir','izin','sakit','dinas','cuti','alpha']);
+        $table->string('bukti')->nullable();
+        $table->timestamps();
+
         });
     }
 

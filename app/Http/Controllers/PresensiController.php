@@ -4,36 +4,51 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Presensi;
-use App\Models\Pegawai;
 
 class PresensiController extends Controller
 {
-    // TAMPIL FORM (NO 3)
-    public function create()
+    public function index()
     {
-        $pegawais = Pegawai::all();
-        return view('presensi.create', compact('pegawais'));
+        // Admin lihat semua, Pegawai lihat miliknya saja
+        if (auth()->user()->role === 'admin') {
+            $presensi = Presensi::with('pegawai')->latest()->get();
+        } else {
+            $presensi = Presensi::where('pegawai_id', auth()->id())->latest()->get();
+        }
+        return view('presensi.index', compact('presensi'));
     }
 
-    // SIMPAN DATA (NO 5)
     public function store(Request $request)
     {
-        $request->validate([
-            'pegawai_id' => 'required|exists:pegawais,id',
+        $now = now('Asia/Jakarta');
+
+        if ($now->format('H:i') < '07:00') {
+            return back()->with('error', 'Presensi belum dibuka, silakan tunggu sampai pukul 07:00');
+        }
+
+        $data = $request->validate([
+            'pegawai_id' => 'required',
             'status' => 'required',
-            'bukti' => 'required|file|mimes:jpg,jpeg,png,pdf'
+            'keterangan' => 'nullable',
+            'bukti' => 'required|image|mimes:jpeg,png,jpg|max:2048'
         ]);
 
-        $file = $request->file('bukti');
-        $filename = time().'_'.$file->getClientOriginalName();
-        $file->move(public_path('uploads'), $filename);
+        $data['tanggal'] = $now->toDateString();
+        $data['jam_masuk'] = $now->format('H:i:s');
+        $data['jam_pulang'] = $now->copy()->addHours(8)->format('H:i:s');
+        
+        if ($request->hasFile('bukti')) {
+            $data['bukti'] = $request->file('bukti')->store('presensi', 'public');
+        }
 
-        Presensi::create([
-            'pegawai_id' => $request->pegawai_id,
-            'status' => $request->status,
-            'bukti' => $filename,
-        ]);
+        Presensi::create($data);
+        return back()->with('success', 'Presensi berhasil disimpan!');
+    }
 
-        return redirect()->back()->with('success', 'Presensi berhasil');
+    public function destroy($id)
+    {
+        if (auth()->user()->role !== 'admin') return back()->with('error', 'Akses ditolak!');
+        Presensi::find($id)->delete();
+        return back()->with('success', 'Data dihapus!');
     }
 }

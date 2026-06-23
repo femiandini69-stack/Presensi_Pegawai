@@ -1,46 +1,45 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="id">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-
-    <title>{{ config('app.name', 'Laravel') }}</title>
-
-    <!-- Font -->
-    <link rel="preconnect" href="https://fonts.bunny.net">
-    <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet">
-
-    <!-- Bootstrap -->
+    <title>PRESENSIKU</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <!-- Vite -->
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <style>
+        body { background-color: #f5f7fa; }
+        .sidebar { width: 260px; height: 100vh; background: #041025; color: white; position: fixed; top: 0; left: 0; padding: 20px; }
+        .main-content { margin-left: 260px; padding: 40px; }
+        .nav-link { color: rgba(255,255,255,0.8); margin-bottom: 5px; }
+        .nav-link:hover, .nav-link.active { color: white; background: #0d6efd !important; }
+    </style>
 </head>
+<body>
 
-<body style="background-color:#f5f7fa;">
+<div class="sidebar">
+    <h4 class="text-white text-center py-2">PRESENSIKU</h4>
+    <hr>
+    <ul class="nav nav-pills flex-column">
+        <li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a></li>
+        <li class="mt-3 text-secondary" style="font-size: 0.75rem;">MASTER DATA</li>
+        <li><a href="{{ route('jabatan.index') }}" class="nav-link {{ request()->routeIs('jabatan.*') ? 'active' : '' }}">Data Jabatan</a></li>
+        <li><a href="{{ route('pegawai.index') }}" class="nav-link {{ request()->routeIs('pegawai.*') ? 'active' : '' }}">Data Pegawai</a></li>
+        <li class="mt-3 text-secondary" style="font-size: 0.75rem;">LAPORAN</li>
+        <li><a href="{{ route('attendance.index') }}" class="nav-link {{ request()->routeIs('attendance.*') ? 'active' : '' }}">Log Presensi</a></li>
+        <li class="mt-3 text-secondary" style="font-size: 0.75rem;">AKUN</li>
+        <li><a href="{{ route('profile') }}" class="nav-link {{ request()->routeIs('profile') ? 'active' : '' }}">Update Profil</a></li>
+        <li>
+            <form action="{{ route('logout') }}" method="POST">
+                @csrf
+                <button type="submit" class="nav-link border-0 bg-transparent w-100 text-start">Logout</button>
+            </form>
+        </li>
+    </ul>
+</div>
 
-    {{-- Navbar --}}
-    @include('layouts.navigation')
+<div class="main-content">
+    @yield('content')
+</div>
 
-    {{-- Header --}}
-    @isset($header)
-        <header class="bg-white shadow-sm">
-            <div class="container py-3">
-                {{ $header }}
-            </div>
-        </header>
-    @endisset
-
-    {{-- Content --}}
-    <main class="py-4">
-        <div class="container">
-            @yield('content')
-        </div>
-    </main>
-
-    <!-- Bootstrap JS -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,44 +1,73 @@
-<x-app-layout>
-    <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            {{ __('Dashboard') }}
-        </h2>
-    </x-slot>
+@extends('layouts.app')
 
-    <div class="py-12">
-        <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
+@section('content')
+<div class="container">
+    <div id="realtime-clock" class="mb-3 text-muted"></div>
 
-            <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                <div class="p-6 text-gray-900">
-                    {{ __("You're logged in!") }}
-                </div>
+    <h2 class="mb-4">Dashboard Admin</h2>
+
+    <div class="row">
+        <div class="col-md-3">
+            <div class="card bg-primary text-white p-3 shadow">
+                <h6>Total Pegawai</h6>
+                <h3>{{ $totalPegawai }}</h3>
             </div>
-
-            <!-- DATA USER -->
-            <div class="mt-6 bg-white shadow-sm sm:rounded-lg p-6">
-
-                <h2 class="text-lg font-bold mb-4">Data User</h2>
-
-                @foreach($users as $user)
-                    <div class="border-b py-4">
-
-                        <p><b>Nama:</b> {{ $user->name }}</p>
-                        <p><b>Email:</b> {{ $user->email }}</p>
-                        <p><b>Divisi:</b> {{ $user->divisi->nama_divisi ?? '-' }}</p>
-
-                        @if($user->foto)
-                            <img src="{{ asset('storage/'.$user->foto) }}"
-                                 width="80"
-                                 class="mt-2 rounded">
-                        @else
-                            <span class="text-gray-500">Tidak ada foto</span>
-                        @endif
-
-                    </div>
-                @endforeach
-
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-success text-white p-3 shadow">
+                <h6>Hadir</h6>
+                <h3>{{ $hadir }}</h3>
             </div>
-
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-warning text-white p-3 shadow">
+                <h6>Izin / Sakit</h6>
+                <h3>{{ $izin + $sakit }}</h3>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-danger text-white p-3 shadow">
+                <h6>Belum Absen</h6>
+                <h3>{{ $belumAbsen }}</h3>
+            </div>
         </div>
     </div>
-</x-app-layout>
+
+    <div class="mt-4 card p-4 shadow">
+        <h5>Daftar Pengguna</h5>
+        <table class="table">
+            <thead>
+                <tr>
+                    <th>Nama</th>
+                    <th>Email</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach($users as $user)
+                <tr>
+                    <td>{{ $user->name }}</td>
+                    <td>{{ $user->email }}</td>
+                </tr>
+                @endforeach
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+    function updateClock() {
+        const now = new Date();
+        const options = { 
+            weekday: 'long', year: 'numeric', month: 'long', day: 'numeric', 
+            hour: '2-digit', minute: '2-digit', second: '2-digit' 
+        };
+        // Sekarang elemen 'realtime-clock' sudah tersedia di atas
+        const clockElement = document.getElementById('realtime-clock');
+        if (clockElement) {
+            clockElement.innerText = now.toLocaleDateString('id-ID', options);
+        }
+    }
+    setInterval(updateClock, 1000);
+    updateClock();
+</script>
+@endsection

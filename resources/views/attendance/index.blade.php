@@ -7,14 +7,8 @@
         <div class="card-header d-flex justify-content-between align-items-center"
             style="background-color: #425A73; border-radius: 16px 16px 0 0;">
             <h5 class="fw-bold m-0" style="color: #E6EEF6;">Buku Presensi Pegawai</h5>
-            
-            {{-- Tombol Tambah Hanya Muncul untuk Admin --}}
             @if(auth()->user()->role === 'admin')
-                <a href="{{ route('attendance.create') }}"
-                   class="btn fw-bold text-white"
-                   style="background-color:#789aca;">
-                   + Tambah Data
-                </a>
+                <a href="{{ route('attendance.create') }}" class="btn fw-bold text-white" style="background-color:#789aca;">+ Tambah Data</a>
             @endif
         </div>
 
@@ -39,6 +33,8 @@
                             <option value="Sakit" {{ request('filter') == 'Sakit' ? 'selected' : '' }}>Sakit</option>
                             <option value="Izin" {{ request('filter') == 'Izin' ? 'selected' : '' }}>Izin</option>
                             <option value="Dinas Luar" {{ request('filter') == 'Dinas Luar' ? 'selected' : '' }}>Dinas Luar</option>
+                            <option value="Cuti" {{ request('filter') == 'Cuti' ? 'selected' : '' }}>Cuti</option>
+                            <option value="Alpha" {{ request('filter') == 'Alpha' ? 'selected' : '' }}>Alpha</option>
                         </select>
                     </div>
                     <div class="col-md-2">
@@ -57,6 +53,8 @@
                         <tr>
                             <th>No</th>
                             <th>Nama</th>
+                            <th>Jabatan</th>
+                            <th>Divisi</th>
                             <th>NIP</th>
                             <th>Tanggal</th>
                             <th>Masuk</th>
@@ -71,11 +69,13 @@
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
                                 <td>{{ $item->nama_pegawai }}</td>
+                                <td><span class="badge" style="background-color:#5e82ac;">{{ $item->jabatan }}</span></td>
+                                <td><span class="badge bg-info text-dark">{{ $item->divisi }}</span></td>
                                 <td>{{ $item->nip }}</td>
                                 <td>{{ $item->tanggal }}</td>
                                 <td>{{ $item->jam_masuk ? \Carbon\Carbon::parse($item->jam_masuk)->format('H:i') : '-' }}</td>
                                 <td>
-                                    @if(in_array($item->keterangan_kehadiran, ['Sakit','Izin']))
+                                    @if(in_array($item->keterangan_kehadiran, ['Sakit','Izin','Cuti']))
                                         <span class="text-muted">-</span>
                                     @else
                                         {{ $item->jam_pulang ? \Carbon\Carbon::parse($item->jam_pulang)->format('H:i') : \Carbon\Carbon::parse($item->jam_masuk)->addHours(8)->format('H:i') }}
@@ -86,32 +86,34 @@
                                     @elseif($item->keterangan_kehadiran == 'Sakit') <span class="badge bg-danger">Sakit</span>
                                     @elseif($item->keterangan_kehadiran == 'Izin') <span class="badge bg-warning text-dark">Izin</span>
                                     @elseif($item->keterangan_kehadiran == 'Dinas Luar') <span class="badge bg-primary">Dinas Luar</span>
+                                    @elseif($item->keterangan_kehadiran == 'Cuti') <span class="badge bg-info">Cuti</span>
+                                    @elseif($item->keterangan_kehadiran == 'Alpha') <span class="badge bg-dark">Alpha</span>
+                                    @else <span class="badge bg-dark">Alpha</span>
                                     @endif
                                 </td>
                                 <td>
                                     @if($item->bukti)
                                         <a href="{{ asset('bukti/' . $item->bukti) }}" target="_blank">
-                                            <img src="{{ asset('bukti/' . $item->bukti) }}" width="60" height="60" class="img-thumbnail" style="object-fit:cover;">
+                                            <img src="{{ asset('bukti/' . $item->bukti) }}" width="50" height="50" class="img-thumbnail" style="object-fit:cover;">
                                         </a>
                                     @else
-                                        <span class="text-muted">Tidak Ada</span>
+                                        <span class="text-muted">-</span>
                                     @endif
                                 </td>
-                                {{-- AKSI HANYA UNTUK ADMIN --}}
                                 <td>
                                     @if(auth()->user()->role === 'admin')
                                         <a href="{{ route('attendance.edit', $item->id) }}" class="btn btn-sm text-white" style="background-color:#5e82ac;">Edit</a>
-                                        <form action="{{ route('attendance.destroy', $item->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus data {{ $item->nama_pegawai }}?')">
+                                        <form action="{{ route('attendance.destroy', $item->id) }}" method="POST" style="display:inline-block;" onsubmit="return confirm('Yakin ingin menghapus?')">
                                             @csrf @method('DELETE')
                                             <button type="submit" class="btn btn-sm text-white" style="background-color:#3c5e82;">Hapus</button>
                                         </form>
                                     @else
-                                        <span class="text-muted small"><em>Read-only</em></span>
+                                        <small class="text-muted">Read-only</small>
                                     @endif
                                 </td>
                             </tr>
                         @empty
-                            <tr><td colspan="9" class="text-center text-muted">Data tidak ditemukan</td></tr>
+                            <tr><td colspan="11" class="text-center text-muted">Data tidak ditemukan</td></tr>
                         @endforelse
                     </tbody>
                 </table>
@@ -119,21 +121,13 @@
 
             {{-- REKAP --}}
             @if($attendances->count() > 0)
-                @php
-                    $totalHadir = $attendances->where('keterangan_kehadiran', 'Hadir')->count();
-                    $totalSakit = $attendances->where('keterangan_kehadiran', 'Sakit')->count();
-                    $totalIzin = $attendances->where('keterangan_kehadiran', 'Izin')->count();
-                    $totalDinas = $attendances->where('keterangan_kehadiran', 'Dinas Luar')->count();
-                    $totalSemua = $attendances->count();
-                @endphp
                 <div class="mt-4">
-                    <h6 class="fw-bold mb-3" style="color:#425A73;">Rekap Kehadiran Pegawai</h6>
-                    <div class="d-flex gap-3">
-                        <div class="flex-fill text-center py-3 rounded-3 shadow-sm" style="background:#e8f5e9;"><div class="fw-bold fs-3 text-success">{{ $totalHadir }}</div><div>Hadir</div></div>
-                        <div class="flex-fill text-center py-3 rounded-3 shadow-sm" style="background:#fdecea;"><div class="fw-bold fs-3 text-danger">{{ $totalSakit }}</div><div>Sakit</div></div>
-                        <div class="flex-fill text-center py-3 rounded-3 shadow-sm" style="background:#fff8e1;"><div class="fw-bold fs-3 text-warning">{{ $totalIzin }}</div><div>Izin</div></div>
-                        <div class="flex-fill text-center py-3 rounded-3 shadow-sm" style="background:#e8f0fe;"><div class="fw-bold fs-3 text-primary">{{ $totalDinas }}</div><div>Dinas Luar</div></div>
-                        <div class="flex-fill text-center py-3 rounded-3 shadow-sm" style="background:#E6EEF6;"><div class="fw-bold fs-3">{{ $totalSemua }}</div><div>Total</div></div>
+                    <h6 class="fw-bold mb-3" style="color:#425A73;">Rekap Kehadiran</h6>
+                    <div class="d-flex gap-2">
+                        <div class="flex-fill text-center py-2 rounded shadow-sm" style="background:#e8f5e9;"><div class="fw-bold text-success">{{ $attendances->where('keterangan_kehadiran', 'Hadir')->count() }}</div><small>Hadir</small></div>
+                        <div class="flex-fill text-center py-2 rounded shadow-sm" style="background:#fdecea;"><div class="fw-bold text-danger">{{ $attendances->where('keterangan_kehadiran', 'Sakit')->count() }}</div><small>Sakit</small></div>
+                        <div class="flex-fill text-center py-2 rounded shadow-sm" style="background:#fff8e1;"><div class="fw-bold text-warning">{{ $attendances->where('keterangan_kehadiran', 'Izin')->count() }}</div><small>Izin</small></div>
+                        <div class="flex-fill text-center py-2 rounded shadow-sm" style="background:#e8f0fe;"><div class="fw-bold text-primary">{{ $attendances->where('keterangan_kehadiran', 'Cuti')->count() }}</div><small>Cuti</small></div>
                     </div>
                 </div>
             @endif

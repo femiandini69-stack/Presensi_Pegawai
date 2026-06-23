@@ -7,14 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class Pegawai extends Model
 {
     protected $fillable = [
-        'nip',
+        'user_id',
         'nama',
-        'jabatan'
+        'nip',
+        'jenis_kelamin',
+        'jabatan',
+        'divisi'
     ];
-
-    // RELASI: 1 pegawai punya banyak presensi
-    public function presensis()
-    {
-        return $this->hasMany(Presensi::class);
-    }
 }

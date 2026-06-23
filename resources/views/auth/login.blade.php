@@ -1,47 +1,59 @@
 <x-guest-layout>
-    <!-- Session Status -->
-    <x-auth-session-status class="mb-4" :status="session('status')" />
+    <style>
+        body { background-color: #101B3A !important; }
+    </style>
 
-    <form method="POST" action="{{ route('login') }}">
-        @csrf
+    <div class="container d-flex justify-content-center align-items-center min-vh-100">
+        <div class="card shadow-lg border-0 rounded-4" style="width: 100%; max-width: 400px; padding: 20px;">
+            <div class="card-body">
+                <h4 class="text-center fw-bold mb-4" style="color: #3d6780;">PRESENSIKU</h4>
+                <p class="text-center text-muted mb-4">Silakan masuk untuk memulai sesi Anda</p>
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email')" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+                <form method="POST" action="{{ route('login') }}">
+                    @csrf
+                    
+                    {{-- Email --}}
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control rounded-3" value="{{ old('email') }}" required autofocus>
+                    </div>
+
+                    {{-- Password --}}
+                    <div class="mb-3">
+                        <label class="form-label">Password</label>
+                        <div class="input-group">
+                            <input type="password" name="password" id="password" class="form-control" required>
+                            <button type="button" class="btn btn-outline-secondary" onclick="togglePassword(event)">
+                                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" viewBox="0 0 16 16">
+                                    <path d="M10.5 8a2.5 2.5 0 1 1-5 0 2.5 2.5 0 0 1 5 0z"/>
+                                    <path d="M0 8s3-5.5 8-5.5S16 8 16 8s-3 5.5-8 5.5S0 8 0 8zm8 3.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7z"/>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="mb-4 form-check">
+                        <input type="checkbox" name="remember" class="form-check-input" id="remember">
+                        <label class="form-check-label" for="remember">Ingat Saya</label>
+                    </div>
+
+                    <button type="submit" class="btn w-100 text-white fw-bold shadow-sm" style="background-color: #3d6780; padding: 10px;">
+                        Masuk
+                    </button>
+                </form>
+
+                <div class="text-center mt-3">
+                    <a href="/" class="text-decoration-none" style="color: #3d6780; font-size: 0.9rem;">Kembali ke Beranda</a>
+                </div>
+            </div>
         </div>
+    </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-
-            <x-text-input id="password" class="block mt-1 w-full"
-                            type="password"
-                            name="password"
-                            required autocomplete="current-password" />
-
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
-
-        <!-- Remember Me -->
-        <div class="block mt-4">
-            <label for="remember_me" class="inline-flex items-center">
-                <input id="remember_me" type="checkbox" class="rounded border-gray-300 text-indigo-600 shadow-sm focus:ring-indigo-500" name="remember">
-                <span class="ms-2 text-sm text-gray-600">{{ __('Remember me') }}</span>
-            </label>
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            @if (Route::has('password.request'))
-                <a class="underline text-sm text-gray-600 hover:text-gray-900 rounded-md focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500" href="{{ route('password.request') }}">
-                    {{ __('Forgot your password?') }}
-                </a>
-            @endif
-
-            <x-primary-button class="ms-3">
-                {{ __('Log in') }}
-            </x-primary-button>
-        </div>
-    </form>
+    <script>
+        function togglePassword(event) {
+            if (event) event.preventDefault();
+            const p = document.getElementById("password");
+            p.type = (p.type === "password") ? "text" : "password";
+        }
+    </script>
 </x-guest-layout>
