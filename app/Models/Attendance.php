@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Pegawai;
 
 class Attendance extends Model
 {
@@ -12,7 +13,7 @@ class Attendance extends Model
     protected $table = 'attendances';
 
     protected $fillable = [
-        'user_id',
+        'pegawai_id',
         'tanggal',
         'jam_masuk',
         'jam_pulang',
@@ -20,8 +21,9 @@ class Attendance extends Model
         'bukti'
     ];
 
-    public function user()
+    
+    public function pegawai()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Pegawai::class);
     }
 }

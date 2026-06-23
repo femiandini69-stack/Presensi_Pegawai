@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Attendance;
-use App\Models\User;
+use App\Models\Pegawai;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -11,13 +11,13 @@ class AttendanceController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Attendance::with('user')->orderBy('id', 'desc');
+        $query = Attendance::with('pegawai')->orderBy('id', 'desc');
 
-        // SEARCH (NIP / NAME)
+        // SEARCH (NIP / NAMA)
         if ($request->search) {
-            $query->whereHas('user', function ($q) use ($request) {
+            $query->whereHas('pegawai', function ($q) use ($request) {
                 $q->where('nip', 'like', '%' . $request->search . '%')
-                  ->orWhere('name', 'like', '%' . $request->search . '%');
+                  ->orWhere('nama', 'like', '%' . $request->search . '%');
             });
         }
 
@@ -33,28 +33,28 @@ class AttendanceController extends Controller
 
     public function create()
     {
-        $users = User::all();
-        return view('attendance.create', compact('users'));
+        $pegawais = Pegawai::all();
+        return view('attendance.create', compact('pegawais'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'user_id' => 'required',
+            'pegawai_id' => 'required',
             'tanggal' => 'required|date',
             'jam_masuk' => 'required',
-            'keterangan_kehadiran' => 'required|in:hadir,sakit,izin,cuti,alpha,dinas luar',
+            'keterangan_kehadiran' => 'required|in:Hadir,Sakit,Izin,Cuti,Alpha,Dinas Luar',
             'bukti' => 'nullable|image|mimes:jpg,jpeg,png|max:2048'
         ]);
 
         $data = [
-            'user_id' => $request->user_id,
+            'pegawai_id' => $request->pegawai_id,
             'tanggal' => $request->tanggal,
             'jam_masuk' => $request->jam_masuk,
             'keterangan_kehadiran' => $request->keterangan_kehadiran,
         ];
 
-        // UPLOAD BUKTI
+        // upload bukti
         if ($request->hasFile('bukti')) {
             $file = $request->file('bukti');
             $filename = time() . '.' . $file->getClientOriginalExtension();
@@ -62,7 +62,7 @@ class AttendanceController extends Controller
             $data['bukti'] = $filename;
         }
 
-        // AUTO JAM PULANG (8 JAM)
+        // auto jam pulang 8 jam
         $data['jam_pulang'] = Carbon::parse($request->jam_masuk)
             ->addHours(8)
             ->format('H:i');
@@ -75,25 +75,25 @@ class AttendanceController extends Controller
 
     public function edit($id)
     {
-        $attendance = Attendance::with('user')->findOrFail($id);
-        $users = User::all();
+        $attendance = Attendance::with('pegawai')->findOrFail($id);
+        $pegawais = Pegawai::all();
 
-        return view('attendance.edit', compact('attendance', 'users'));
+        return view('attendance.edit', compact('attendance', 'pegawais'));
     }
 
     public function update(Request $request, $id)
     {
         $request->validate([
-            'user_id' => 'required',
+            'pegawai_id' => 'required',
             'tanggal' => 'required|date',
             'jam_masuk' => 'required',
-            'keterangan_kehadiran' => 'required|in:hadir,sakit,izin,cuti,alpha,dinas luar'
+            'keterangan_kehadiran' => 'required|in:Hadir,Sakit,Izin,Cuti,Alpha,Dinas Luar'
         ]);
 
         $attendance = Attendance::findOrFail($id);
 
         $attendance->update([
-            'user_id' => $request->user_id,
+            'pegawai_id' => $request->pegawai_id,
             'tanggal' => $request->tanggal,
             'jam_masuk' => $request->jam_masuk,
             'keterangan_kehadiran' => $request->keterangan_kehadiran,
@@ -108,8 +108,7 @@ class AttendanceController extends Controller
 
     public function destroy($id)
     {
-        $attendance = Attendance::findOrFail($id);
-        $attendance->delete();
+        Attendance::findOrFail($id)->delete();
 
         return redirect()->route('attendance.index')
             ->with('success', 'Data berhasil dihapus');

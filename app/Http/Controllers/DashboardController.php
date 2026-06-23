@@ -10,7 +10,7 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Attendance::with('user');
+        $query = Attendance::with('pegawai');
 
         // FILTER TANGGAL
         if ($request->start_date && $request->end_date) {
