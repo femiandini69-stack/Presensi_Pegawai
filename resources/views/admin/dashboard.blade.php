@@ -1,4 +1,4 @@
-@extends('layouts.app')
+\@extends('layouts.app')
 
 @section('content')
 <div class="container">
@@ -36,13 +36,6 @@
         <div class="card bg-info text-white p-3">
             <h6>Sakit</h6>
             <h3>{{ $sakit }}</h3>
-        </div>
-    </div>
-
-     <div class="col-md-3">
-        <div class="card bg-info text-white p-3">
-            <h6>Belum Absen</h6>
-            <h3>{{ $belumAbsen }}</h3>
         </div>
     </div>
 

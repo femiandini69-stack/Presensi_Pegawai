@@ -26,7 +26,9 @@
         <li class="mt-3 text-secondary" style="font-size: 0.75rem;">LAPORAN</li>
         <li><a href="{{ route('attendance.index') }}" class="nav-link {{ request()->routeIs('attendance.*') ? 'active' : '' }}">Log Presensi</a></li>
         <li class="mt-3 text-secondary" style="font-size: 0.75rem;">AKUN</li>
-        <li><a href="{{ route('profile') }}" class="nav-link {{ request()->routeIs('profile') ? 'active' : '' }}">Update Profil</a></li>
+        <li><a href="{{ route('profile.edit') }}" class="nav-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}">
+    Update Profil
+</a>
         <li>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf

@@ -91,6 +91,10 @@
                         <input type="file" name="bukti" class="form-control">
                     </div>
 
+                    <div class="mb-3">
+    <label>Tanggal</label>
+    <input type="date" name="tanggal" class="form-control" required>
+</div>
                     <button type="submit" class="btn btn-primary">Simpan Presensi</button>
                 </form>
             </div>

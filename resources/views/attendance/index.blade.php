@@ -68,10 +68,21 @@
                         @forelse($attendances as $item)
                             <tr>
                                 <td>{{ $loop->iteration }}</td>
-                                <td>{{ $item->nama_pegawai }}</td>
-                                <td><span class="badge" style="background-color:#5e82ac;">{{ $item->jabatan }}</span></td>
-                                <td><span class="badge bg-info text-dark">{{ $item->divisi }}</span></td>
-                                <td>{{ $item->nip }}</td>
+                                <td>{{ $item->pegawai->nama ?? '-' }}</td>
+
+<td>
+    <span class="badge" style="background-color:#5e82ac;">
+        {{ $item->pegawai->jabatan ?? '-' }}
+    </span>
+</td>
+
+<td>
+    <span class="badge bg-info text-dark">
+        {{ $item->pegawai->divisi ?? '-' }}
+    </span>
+</td>
+
+<td>{{ $item->pegawai->nip ?? '-' }}</td>
                                 <td>{{ $item->tanggal }}</td>
                                 <td>{{ $item->jam_masuk ? \Carbon\Carbon::parse($item->jam_masuk)->format('H:i') : '-' }}</td>
                                 <td>

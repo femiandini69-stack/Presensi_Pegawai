@@ -4,28 +4,45 @@ namespace App\Http\Controllers;
 
 use App\Models\Attendance;
 use App\Models\User;
+use Illuminate\Http\Request;
 
 class DashboardController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $today = now()->toDateString();
-        
-        $totalPegawai = User::count();
-        $hadir = Attendance::whereDate('tanggal', $today)->where('keterangan_kehadiran', 'hadir')->count();
-        $izin = Attendance::whereDate('tanggal', $today)->where('keterangan_kehadiran', 'izin')->count();
-        $sakit = Attendance::whereDate('tanggal', $today)->where('keterangan_kehadiran', 'sakit')->count();
-        $belumAbsen = max(0, $totalPegawai - ($hadir + $izin + $sakit));
-        $users = User::with('divisi')->get();
+        $query = Attendance::with('user');
 
-        // Pastikan variabel ini ada di dalam compact()
-        return view('dashboard', compact(
-            'users', 
-            'totalPegawai', 
-            'hadir', 
-            'izin', 
-            'sakit', 
-            'belumAbsen'
-        ));
+        // FILTER TANGGAL
+        if ($request->start_date && $request->end_date) {
+            $query->whereBetween('tanggal', [$request->start_date, $request->end_date]);
+        }
+
+        $attendances = $query->get();
+
+        return view('admin.dashboard', [
+            'totalUser' => User::count(),
+
+            'hadir' => $attendances->where('keterangan_kehadiran','hadir')->count(),
+            'izin'  => $attendances->where('keterangan_kehadiran','izin')->count(),
+            'sakit' => $attendances->where('keterangan_kehadiran','sakit')->count(),
+            'cuti'  => $attendances->where('keterangan_kehadiran','cuti')->count(),
+            'alpha' => $attendances->where('keterangan_kehadiran','alpha')->count(),
+
+            'attendances' => $attendances
+        ]);
+    }
+
+    // REAL TIME DATA
+    public function data()
+    {
+        $att = Attendance::whereDate('tanggal', now()->toDateString())->get();
+
+        return response()->json([
+            'hadir' => $att->where('keterangan_kehadiran', 'hadir')->count(),
+            'izin'  => $att->where('keterangan_kehadiran', 'izin')->count(),
+            'sakit' => $att->where('keterangan_kehadiran', 'sakit')->count(),
+            'cuti'  => $att->where('keterangan_kehadiran', 'cuti')->count(),
+            'alpha' => $att->where('keterangan_kehadiran', 'alpha')->count(),
+        ]);
     }
 }

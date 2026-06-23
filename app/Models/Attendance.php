@@ -12,7 +12,7 @@ class Attendance extends Model
     protected $table = 'attendances';
 
     protected $fillable = [
-        'pegawai_id',
+        'user_id',
         'tanggal',
         'jam_masuk',
         'jam_pulang',
@@ -20,9 +20,8 @@ class Attendance extends Model
         'bukti'
     ];
 
-
-    public function pegawai()
+    public function user()
     {
-        return $this->belongsTo(Pegawai::class);
+        return $this->belongsTo(User::class);
     }
 }
