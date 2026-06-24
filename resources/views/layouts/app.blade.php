@@ -18,23 +18,83 @@
 <div class="sidebar">
     <h4 class="text-white text-center py-2">PRESENSIKU</h4>
     <hr>
+
     <ul class="nav nav-pills flex-column">
-        <li class="nav-item"><a href="{{ route('dashboard') }}" class="nav-link {{ request()->routeIs('dashboard') ? 'active' : '' }}">Dashboard</a></li>
-        <li class="mt-3 text-secondary" style="font-size: 0.75rem;">MASTER DATA</li>
-        <li><a href="{{ route('jabatan.index') }}" class="nav-link {{ request()->routeIs('jabatan.*') ? 'active' : '' }}">Data Jabatan</a></li>
-        <li><a href="{{ route('pegawai.index') }}" class="nav-link {{ request()->routeIs('pegawai.*') ? 'active' : '' }}">Data Pegawai</a></li>
-        <li class="mt-3 text-secondary" style="font-size: 0.75rem;">LAPORAN</li>
-        <li><a href="{{ route('attendance.index') }}" class="nav-link {{ request()->routeIs('attendance.*') ? 'active' : '' }}">Log Presensi</a></li>
+
+        {{-- DASHBOARD --}}
+        <li class="nav-item">
+            <a href="{{ auth()->user()->role === 'admin' ? route('dashboard') : url('/pegawai/dashboard') }}"
+               class="nav-link {{ request()->is('dashboard') ? 'active' : '' }}">
+                Dashboard
+            </a>
+        </li>
+
+        {{-- ================= ADMIN MENU ================= --}}
+        @if(auth()->user()->role === 'admin')
+
+            <li class="mt-3 text-secondary" style="font-size: 0.75rem;">MASTER DATA</li>
+
+            <li>
+                <a href="{{ route('jabatan.index') }}"
+                   class="nav-link {{ request()->routeIs('jabatan.*') ? 'active' : '' }}">
+                    Data Jabatan
+                </a>
+            </li>
+
+            <li>
+                <a href="{{ route('pegawai.index') }}"
+                   class="nav-link {{ request()->routeIs('pegawai.*') ? 'active' : '' }}">
+                    Data Pegawai
+                </a>
+            </li>
+
+            <li class="mt-3 text-secondary" style="font-size: 0.75rem;">LAPORAN</li>
+
+            <li>
+                <a href="{{ route('presensi.index') }}"
+                   class="nav-link {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
+                    Log Presensi
+                </a>
+            </li>
+
+        @endif
+
+
+        {{-- ================= PEGAWAI MENU ================= --}}
+        @if(auth()->user()->role === 'pegawai')
+
+            <li class="mt-3 text-secondary" style="font-size: 0.75rem;">PEGAWAI</li>
+
+            <li>
+                <a href="{{ url('/attendance') }}"
+                   class="nav-link {{ request()->routeIs('attendance.*') ? 'active' : '' }}">
+                    Presensi Saya
+                </a>
+            </li>
+
+        @endif
+
+
+        {{-- ================= AKUN (SEMUA ROLE) ================= --}}
         <li class="mt-3 text-secondary" style="font-size: 0.75rem;">AKUN</li>
-        <li><a href="{{ route('profile.edit') }}" class="nav-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}">
-    Update Profil
-</a>
+
+        <li>
+            <a href="{{ route('profile.edit') }}"
+               class="nav-link {{ request()->routeIs('profile.edit') ? 'active' : '' }}">
+                Update Profil
+            </a>
+        </li>
+
         <li>
             <form action="{{ route('logout') }}" method="POST">
                 @csrf
-                <button type="submit" class="nav-link border-0 bg-transparent w-100 text-start">Logout</button>
+                <button type="submit"
+                        class="nav-link border-0 bg-transparent w-100 text-start">
+                    Logout
+                </button>
             </form>
         </li>
+
     </ul>
 </div>
 

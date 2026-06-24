@@ -17,7 +17,7 @@
                     <a class="nav-link fw-semibold" href="{{ route('dashboard') }}">Dashboard</a>
                 </li>
                 <li class="nav-item">
-                    <a class="nav-link fw-semibold" href="{{ route('attendance.index') }}">Presensi</a>
+                    <a class="nav-link fw-semibold" href="{{ route('presensi.index') }}">Presensi</a>
                 </li>
             </ul>
             <ul class="navbar-nav">

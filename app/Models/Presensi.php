@@ -6,20 +6,18 @@ use Illuminate\Database\Eloquent\Model;
 
 class Presensi extends Model
 {
-    
-protected $fillable = [
-    'pegawai_id',
-    'tanggal',
-    'jam_masuk',
-    'jam_pulang',
-    'status',
-    'bukti',
-    'keterangan'
-];
+    protected $table = 'presensi';
 
-    // RELASI ke pegawai
-    public function pegawai()
-    {
-        return $this->belongsTo(Pegawai::class);
-    }
+    protected $fillable = [
+        'nama_pegawai',
+        'nip',
+        'jabatan',
+        'divisi',
+        'tanggal',
+        'jam_masuk',
+        'jam_pulang',
+        'status',
+        'bukti',
+        'keterangan'
+    ];
 }

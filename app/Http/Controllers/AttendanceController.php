@@ -28,7 +28,7 @@ class AttendanceController extends Controller
 
         $attendances = $query->get();
 
-        return view('attendance.index', compact('attendances'));
+        return view('presensi.index', compact('attendances'));
     }
 
     public function create()
@@ -69,7 +69,7 @@ class AttendanceController extends Controller
 
         Attendance::create($data);
 
-        return redirect()->route('attendance.index')
+        return redirect()->route('presensi.index')
             ->with('success', 'Presensi berhasil ditambahkan');
     }
 
@@ -102,7 +102,7 @@ class AttendanceController extends Controller
                 ->format('H:i'),
         ]);
 
-        return redirect()->route('attendance.index')
+        return redirect()->route('presensi.index')
             ->with('success', 'Data berhasil diupdate');
     }
 
@@ -110,7 +110,7 @@ class AttendanceController extends Controller
     {
         Attendance::findOrFail($id)->delete();
 
-        return redirect()->route('attendance.index')
+        return redirect()->route('presensi.index')
             ->with('success', 'Data berhasil dihapus');
     }
 }

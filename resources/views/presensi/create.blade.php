@@ -1,15 +1,21 @@
-<form action="{{ route('presensi.store') }}" method="POST" enctype="multipart/form-data">
-    @csrf
-    <input type="hidden" name="pegawai_id" value="{{ auth()->user()->id }}">
-    
-    <select name="status" required>
-        <option value="hadir">Hadir</option>
-        <option value="izin">Izin</option>
-        <option value="sakit">Sakit</option>
-    </select>
-    
-    <input type="file" name="bukti" accept="image/*" required>
-    <textarea name="keterangan" placeholder="Keterangan (jika ada)"></textarea>
-    
-    <button type="submit">Submit Presensi</button>
+<form method="POST" action="{{ route('presensi.store') }}" enctype="multipart/form-data">
+@csrf
+
+<input name="nama" placeholder="Nama" class="form-control mb-2">
+<input name="nip" placeholder="NIP" class="form-control mb-2">
+<input name="jabatan" placeholder="Jabatan" class="form-control mb-2">
+<input name="divisi" placeholder="Divisi" class="form-control mb-2">
+
+<select name="status" class="form-control mb-2">
+    <option>Hadir</option>
+    <option>Izin</option>
+    <option>Sakit</option>
+    <option>Dinas Luar</option>
+    <option>Cuti</option>
+    <option>Alpha</option>
+</select>
+
+<input type="file" name="foto" class="form-control mb-2">
+
+<button class="btn btn-success">Simpan</button>
 </form>

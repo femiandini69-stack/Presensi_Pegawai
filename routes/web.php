@@ -3,17 +3,17 @@
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 
-use App\Http\Controllers\AttendanceController;
-use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\JabatanController;
 use App\Http\Controllers\PegawaiController;
 use App\Http\Controllers\LaporanController;
 use App\Http\Controllers\PengajuanController;
-use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PresensiController;
 
 /*
 |--------------------------------------------------------------------------
-| HOME
+| ROOT
 |--------------------------------------------------------------------------
 */
 Route::get('/', function () {
@@ -22,60 +22,53 @@ Route::get('/', function () {
 
 /*
 |--------------------------------------------------------------------------
-| AUTH REQUIRED
+| AUTH USER (WAJIB LOGIN)
 |--------------------------------------------------------------------------
 */
 Route::middleware(['auth'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | DASHBOARD HR
+    | DASHBOARD REDIRECT
     |--------------------------------------------------------------------------
     */
-    Route::get('/dashboard', [DashboardController::class, 'index'])
-        ->name('dashboard');
+    Route::get('/dashboard', function () {
+        $role = auth()->user()->role;
 
-    // REAL TIME DATA
-    Route::get('/dashboard/data', [DashboardController::class, 'data']);
+        if ($role === 'admin') {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->route('pegawai.dashboard');
+    })->name('dashboard');
 
     /*
     |--------------------------------------------------------------------------
-    | PDF LAPORAN
+    | PEGAWAI DASHBOARD
     |--------------------------------------------------------------------------
     */
-    Route::get('/laporan/pdf', [LaporanController::class, 'pdf'])
-        ->name('laporan.pdf');
-
-    Route::get('/laporan/rekap', [LaporanController::class, 'rekapPdf'])
-        ->name('laporan.rekap');
-
-    /*
-    |--------------------------------------------------------------------------
-    | ATTENDANCE
-    |--------------------------------------------------------------------------
-    */
-    Route::resource('attendance', AttendanceController::class);
+    Route::middleware(['role:pegawai'])->group(function () {
+        Route::get('/pegawai/dashboard', function () {
+            return view('pegawai.dashboard');
+        })->name('pegawai.dashboard');
+    });
 
     /*
     |--------------------------------------------------------------------------
-    | JABATAN
+    | PRESENSI (FULL CRUD - FIXED)
     |--------------------------------------------------------------------------
     */
-    Route::resource('jabatan', JabatanController::class);
+    Route::prefix('presensi')->name('presensi.')->group(function () {
 
-    /*
-    |--------------------------------------------------------------------------
-    | PEGAWAI
-    |--------------------------------------------------------------------------
-    */
-    Route::resource('pegawai', PegawaiController::class);
+        Route::get('/', [PresensiController::class, 'index'])->name('index');        // LIST / LOG
+        Route::get('/create', [PresensiController::class, 'create'])->name('create'); // FORM
+        Route::post('/', [PresensiController::class, 'store'])->name('store');        // SIMPAN
 
-    /*
-    |--------------------------------------------------------------------------
-    | PENGAJUAN
-    |--------------------------------------------------------------------------
-    */
-    Route::resource('pengajuan', PengajuanController::class);
+        Route::get('/{id}/edit', [PresensiController::class, 'edit'])->name('edit');  // EDIT
+        Route::put('/{id}', [PresensiController::class, 'update'])->name('update');   // UPDATE
+
+        Route::delete('/{id}', [PresensiController::class, 'destroy'])->name('destroy'); // HAPUS
+    });
 
     /*
     |--------------------------------------------------------------------------
@@ -85,19 +78,60 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+/*
+|--------------------------------------------------------------------------
+| ADMIN ONLY
+|--------------------------------------------------------------------------
+*/
+Route::middleware(['auth', 'role:admin'])->group(function () {
 
     /*
     |--------------------------------------------------------------------------
-    | LOGOUT
+    | ADMIN DASHBOARD
     |--------------------------------------------------------------------------
     */
-    Route::post('/logout', function () {
-        Auth::logout();
-        request()->session()->invalidate();
-        request()->session()->regenerateToken();
-        return redirect('/login');
-    })->name('logout');
+    Route::get('/admin/dashboard', [DashboardController::class, 'index'])
+        ->name('admin.dashboard');
 
+    Route::get('/dashboard/data', [DashboardController::class, 'data']);
+
+    /*
+    |--------------------------------------------------------------------------
+    | MASTER DATA
+    |--------------------------------------------------------------------------
+    */
+    Route::resource('pegawai', PegawaiController::class);
+    Route::resource('jabatan', JabatanController::class);
+    Route::resource('pengajuan', PengajuanController::class);
+
+    /*
+    |--------------------------------------------------------------------------
+    | LAPORAN
+    |--------------------------------------------------------------------------
+    */
+    Route::get('/laporan/pdf', [LaporanController::class, 'pdf']);
+    Route::get('/laporan/rekap', [LaporanController::class, 'rekapPdf']);
 });
 
+/*
+|--------------------------------------------------------------------------
+| LOGOUT
+|--------------------------------------------------------------------------
+*/
+Route::post('/logout', function () {
+    Auth::logout();
+
+    request()->session()->invalidate();
+    request()->session()->regenerateToken();
+
+    return redirect('/login');
+})->name('logout');
+
+/*
+|--------------------------------------------------------------------------
+| AUTH DEFAULT (BREEZE / FORTIFY)
+|--------------------------------------------------------------------------
+*/
 require __DIR__.'/auth.php';

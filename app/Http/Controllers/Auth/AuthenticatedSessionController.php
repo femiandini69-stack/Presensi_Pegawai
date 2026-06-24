@@ -11,68 +11,49 @@ use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
-
     /**
-     * Display login page
+     * Show login page
      */
     public function create(): View
     {
         return view('auth.login');
     }
 
-
     /**
      * Handle login
      */
     public function store(LoginRequest $request): RedirectResponse
-    {
-        $request->authenticate();
+{
+    $request->authenticate();
+    $request->session()->regenerate();
 
-        $request->session()->regenerate();
+    $user = $request->user();
 
-        $user = Auth::user();
-
-
-        // Jika admin
-        if ($user->role == 'admin') {
-
-            return redirect('/admin/dashboard');
-
-        }
-
-
-        // Jika pegawai
-        if ($user->role == 'pegawai') {
-
-            return redirect('/pegawai/dashboard');
-
-        }
-
-
-        // Default kalau role tidak ditemukan
+    if (!$user || !$user->role) {
         return redirect('/');
-
     }
 
+    if ($user->role === 'admin') {
+        return redirect('/dashboard');
+    }
 
+    if ($user->role === 'pegawai') {
+        return redirect('/pegawai/dashboard');
+    }
 
+    return redirect('/');
+}
     /**
      * Logout
      */
     public function destroy(Request $request): RedirectResponse
     {
-
         Auth::guard('web')->logout();
-
 
         $request->session()->invalidate();
 
-
         $request->session()->regenerateToken();
 
-
         return redirect('/');
-
     }
-
 }

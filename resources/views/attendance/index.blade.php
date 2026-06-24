@@ -21,7 +21,7 @@
             @endif
 
             {{-- SEARCH + FILTER --}}
-            <form method="GET" action="{{ route('attendance.index') }}" class="mb-3">
+            <form method="GET" action="{{ route('presensi.index') }}" class="mb-3">
                 <div class="row g-2">
                     <div class="col-md-4">
                         <input type="text" name="search" class="form-control" placeholder="Cari nama atau NIP..." value="{{ request('search') }}">
@@ -41,7 +41,7 @@
                         <button type="submit" class="btn fw-bold text-white w-100" style="background-color:#206abc;">Cari</button>
                     </div>
                     <div class="col-md-2">
-                        <a href="{{ route('attendance.index') }}" class="btn btn-secondary w-100">Reset</a>
+                        <a href="{{ route('presensi.index') }}" class="btn btn-secondary w-100">Reset</a>
                     </div>
                 </div>
             </form>
