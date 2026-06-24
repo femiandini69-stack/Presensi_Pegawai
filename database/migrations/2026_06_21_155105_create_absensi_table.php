@@ -11,7 +11,7 @@ return new class extends Migration
      */
     public function up()
 {
-    Schema::create('absensi', function (Blueprint $table) {
+    Schema::create('attendances', function (Blueprint $table) {
         $table->id();
         $table->foreignId('user_id')->constrained();
         $table->string('status'); // hadir, sakit, izin, cuti
@@ -24,6 +24,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('absensi');
+        Schema::dropIfExists('attendances');
     }
 };

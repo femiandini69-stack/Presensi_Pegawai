@@ -11,6 +11,7 @@ use Illuminate\View\View;
 
 class AuthenticatedSessionController extends Controller
 {
+
     /**
      * Display login page
      */
@@ -29,11 +30,10 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
-
         $user = Auth::user();
 
 
-        // Kalau admin
+        // Jika admin
         if ($user->role == 'admin') {
 
             return redirect('/admin/dashboard');
@@ -41,7 +41,7 @@ class AuthenticatedSessionController extends Controller
         }
 
 
-        // Kalau pegawai
+        // Jika pegawai
         if ($user->role == 'pegawai') {
 
             return redirect('/pegawai/dashboard');
@@ -49,7 +49,7 @@ class AuthenticatedSessionController extends Controller
         }
 
 
-        // Default
+        // Default kalau role tidak ditemukan
         return redirect('/');
 
     }
@@ -74,4 +74,5 @@ class AuthenticatedSessionController extends Controller
         return redirect('/');
 
     }
+
 }

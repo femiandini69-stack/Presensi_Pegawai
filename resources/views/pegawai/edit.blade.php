@@ -17,7 +17,7 @@
 
         <div class="mb-3">
             <label>Nama</label>
-            <input type="text" name="nama" class="form-control"
+            <input type="text" name="name" class="form-control"
                    value="{{ $pegawai->name }}">
         </div>
 

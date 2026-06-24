@@ -30,7 +30,7 @@ class PegawaiController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'nama' => 'required',
+            'name' => 'required',
             'nip' => 'required',
             'jenis_kelamin' => 'required',
             'jabatan' => 'required',
@@ -38,7 +38,7 @@ class PegawaiController extends Controller
         ]);
 
         User::create([
-            'name' => $request->nama,
+            'name' => $request->name,
             'nip' => $request->nip,
             'jenis_kelamin' => $request->jenis_kelamin,
             'jabatan' => $request->jabatan,
@@ -69,7 +69,7 @@ class PegawaiController extends Controller
 {
 
     $request->validate([
-        'nama' => 'required',
+        'name' => 'required',
         'nip' => 'required',
         'jenis_kelamin' => 'required',
         'jabatan' => 'required',
@@ -78,7 +78,7 @@ class PegawaiController extends Controller
 
     $pegawai = User::findOrFail($id);
 
-    $pegawai->name = $request->nama;
+    $pegawai->name = $request->name;
     $pegawai->nip = $request->nip;
     $pegawai->jenis_kelamin = $request->jenis_kelamin;
     $pegawai->jabatan = $request->jabatan;
