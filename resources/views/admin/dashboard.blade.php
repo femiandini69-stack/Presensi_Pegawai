@@ -11,26 +11,43 @@
 <!-- CARD -->
 <div class="row">
 
-    <div class="col-md-3">
+    <div class="row g-3">
+
+
+    <!-- BARIS ATAS 3 CARD -->
+
+    <div class="col-md-4">
         <div class="card bg-primary text-white p-3">
             <h6>Total Pegawai</h6>
             <h3>{{ $totalUser }}</h3>
         </div>
     </div>
 
-    <div class="col-md-3">
+
+    <div class="col-md-4">
         <div class="card bg-success text-white p-3">
             <h6>Hadir</h6>
             <h3>{{ $hadir }}</h3>
         </div>
     </div>
 
-    <div class="col-md-3">
+
+    <div class="col-md-4">
         <div class="card bg-warning text-white p-3">
             <h6>Izin</h6>
             <h3>{{ $izin }}</h3>
         </div>
     </div>
+
+
+
+    <!-- BARIS BAWAH 4 CARD -->
+
+</div>
+
+
+<div class="row g-3 mt-1">
+
 
     <div class="col-md-3">
         <div class="card bg-info text-white p-3">
@@ -40,8 +57,31 @@
     </div>
 
 
-</div>
+    <div class="col-md-3">
+        <div class="card bg-secondary text-white p-3">
+            <h6>Cuti</h6>
+            <h3>{{ $cuti }}</h3>
+        </div>
+    </div>
 
+
+    <div class="col-md-3">
+        <div class="card bg-dark text-white p-3">
+            <h6>Alpha</h6>
+            <h3>{{ $alpha }}</h3>
+        </div>
+    </div>
+
+
+    <div class="col-md-3">
+        <div class="card bg-danger text-white p-3">
+            <h6>Dinas Luar</h6>
+            <h3>{{ $dinas_luar }}</h3>
+        </div>
+    </div>
+
+
+</div>
 <!-- GRAFIK -->
 <div class="row mt-4">
     <div class="col-md-12">
@@ -85,7 +125,7 @@ const ctx = document.getElementById('attendanceChart').getContext('2d');
 new Chart(ctx, {
     type: 'bar',
     data: {
-        labels: ['Hadir', 'Izin', 'Sakit', 'Cuti', 'Alpha'],
+        labels: ['Hadir', 'Izin', 'Sakit', 'Cuti', 'Alpha', 'Dinas Luar'],
         datasets: [{
             label: 'Rekap Presensi',
             data: [
@@ -93,9 +133,10 @@ new Chart(ctx, {
                 {{ $izin }},
                 {{ $sakit }},
                 {{ $cuti }},
-                {{ $alpha }}
+                {{ $alpha }},
+                {{ $dinas_luar }}
             ],
-            backgroundColor: ['green','orange','red','blue','black']
+            backgroundColor: ['green','orange','red','blue','black', 'gray']
         }]
     }
 });

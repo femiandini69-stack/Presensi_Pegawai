@@ -3,7 +3,15 @@
 @section('content')
 <div class="container">
 
+    <div class="d-flex justify-content-between align-items-center mb-3">
+
     <h3>Daftar Pegawai</h3>
+
+    <a href="{{ route('pegawai.create') }}" class="btn btn-primary">
+        + Tambah Data
+    </a>
+
+</div>
 
     <table class="table table-bordered">
         <thead>
@@ -21,7 +29,7 @@
             @foreach($pegawais as $p)
             <tr>
                 <td>{{ $p->nip ?? '-' }}</td>
-                <td>{{ $p->name ?? '-' }}</td>
+                <td>{{ $p->nama ?? '-' }}</td>
                 <td>{{ $p->jenis_kelamin ?? '-' }}</td>
                 <td>{{ $p->jabatan ?? '-' }}</td>
                 <td>{{ $p->divisi ?? '-' }}</td>

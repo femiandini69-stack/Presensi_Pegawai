@@ -2,19 +2,22 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\User;
+use App\Models\Pegawai;
 use Illuminate\Http\Request;
 
 class PegawaiController extends Controller
 {
+
     // =========================
     // LIST PEGAWAI
     // =========================
     public function index()
     {
-        $pegawais = User::where('role', 'pegawai')->get();
+        $pegawais = Pegawai::all();
+
         return view('pegawai.index', compact('pegawais'));
     }
+
 
     // =========================
     // FORM TAMBAH
@@ -24,80 +27,104 @@ class PegawaiController extends Controller
         return view('pegawai.create');
     }
 
+
     // =========================
-    // SIMPAN DATA BARU
+    // SIMPAN DATA
     // =========================
     public function store(Request $request)
     {
+
         $request->validate([
-            'name' => 'required',
+            'nama' => 'required',
             'nip' => 'required',
             'jenis_kelamin' => 'required',
             'jabatan' => 'required',
             'divisi' => 'required',
         ]);
 
-        User::create([
-            'name' => $request->name,
+
+        Pegawai::create([
+
+            'nama' => $request->nama,
             'nip' => $request->nip,
             'jenis_kelamin' => $request->jenis_kelamin,
             'jabatan' => $request->jabatan,
             'divisi' => $request->divisi,
-            'email' => 'temp_' . time() . '@example.com',
-            'password' => bcrypt('password123'),
-            'role' => 'pegawai',
+
         ]);
 
-        return redirect()->route('pegawai.index')
-            ->with('success', 'Pegawai berhasil ditambah!');
+
+        return redirect()
+            ->route('pegawai.index')
+            ->with('success','Pegawai berhasil ditambah!');
     }
 
+
+
     // =========================
-    // FORM EDIT (INI FIX UTAMA)
+    // FORM EDIT
     // =========================
     public function edit($id)
     {
-        $pegawai = User::findOrFail($id);
+        $pegawai = Pegawai::findOrFail($id);
+
         return view('pegawai.edit', compact('pegawai'));
     }
 
+
+
     // =========================
-    // UPDATE DATA (FIX TOTAL)
+    // UPDATE DATA
     // =========================
-    
     public function update(Request $request, $id)
-{
+    {
 
-    $request->validate([
-        'name' => 'required',
-        'nip' => 'required',
-        'jenis_kelamin' => 'required',
-        'jabatan' => 'required',
-        'divisi' => 'required',
-    ]);
+        $request->validate([
 
-    $pegawai = User::findOrFail($id);
+            'nama' => 'required',
+            'nip' => 'required',
+            'jenis_kelamin' => 'required',
+            'jabatan' => 'required',
+            'divisi' => 'required',
 
-    $pegawai->name = $request->name;
-    $pegawai->nip = $request->nip;
-    $pegawai->jenis_kelamin = $request->jenis_kelamin;
-    $pegawai->jabatan = $request->jabatan;
-    $pegawai->divisi = $request->divisi;
+        ]);
 
-    $pegawai->save();
 
-    return redirect()->route('pegawai.index')
-        ->with('success', 'Data pegawai berhasil diperbarui!');
-}
+        $pegawai = Pegawai::findOrFail($id);
+
+
+        $pegawai->update([
+
+            'nama' => $request->nama,
+            'nip' => $request->nip,
+            'jenis_kelamin' => $request->jenis_kelamin,
+            'jabatan' => $request->jabatan,
+            'divisi' => $request->divisi,
+
+        ]);
+
+
+        return redirect()
+            ->route('pegawai.index')
+            ->with('success','Data pegawai berhasil diperbarui!');
+    }
+
+
+
     // =========================
     // HAPUS DATA
     // =========================
     public function destroy($id)
     {
-        $pegawai = User::findOrFail($id);
+
+        $pegawai = Pegawai::findOrFail($id);
+
         $pegawai->delete();
 
-        return redirect()->route('pegawai.index')
-            ->with('success', 'Data pegawai berhasil dihapus!');
+
+        return redirect()
+            ->route('pegawai.index')
+            ->with('success','Data pegawai berhasil dihapus!');
     }
+
 }
