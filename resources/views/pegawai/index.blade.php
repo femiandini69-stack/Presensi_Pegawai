@@ -21,69 +21,79 @@ color:white;
 </div>
 
     <table class="table table-bordered">
-        <thead>
-            <tr>
-                <th>NIP</th>
-                <th>Nama</th>
-                <th>Jenis Kelamin</th>
-                <th>Jabatan</th>
-                <th>Divisi</th>
-                <th>Aksi</th>
-            </tr>
-        </thead>
+    <thead>
+        <tr>
+            <th>No</th>
+            <th>NIP</th>
+            <th>Nama</th>
+            <th>Jenis Kelamin</th>
+            <th>Jabatan</th>
+            <th>Divisi</th>
+            <th>Aksi</th>
+        </tr>
+    </thead>
 
-        <tbody>
-            @foreach($pegawais as $p)
-            <tr>
-                <td>{{ $p->nip ?? '-' }}</td>
-                <td>{{ $p->nama ?? '-' }}</td>
-                <td>{{ $p->jenis_kelamin ?? '-' }}</td>
-                <td>{{ $p->jabatan ?? '-' }}</td>
-                <td>{{ $p->divisi ?? '-' }}</td>
+    <tbody>
+        @foreach($pegawais as $p)
+        <tr>
 
-                <td>
-                    <a href="{{ route('pegawai.edit', $p->id) }}" 
-class="btn btn-sm"
-style="
-background:#28508D;
-color:white;
-">
+            <td>{{ $loop->iteration }}</td>
 
-Edit
+            <td>{{ $p->nip ?? '-' }}</td>
 
-</a>
+            <td>{{ $p->nama ?? '-' }}</td>
+
+            <td>{{ $p->jenis_kelamin ?? '-' }}</td>
+
+            <td>{{ $p->jabatan ?? '-' }}</td>
+
+            <td>{{ $p->divisi ?? '-' }}</td>
 
 
-<form action="{{ route('pegawai.destroy', $p->id) }}"
-method="POST"
-style="display:inline;"
-onsubmit="return confirm('Yakin hapus data ini?')">
+            <td>
 
-@csrf
-@method('DELETE')
-
-
-<button class="btn btn-sm"
-
-style="
-background:#3C66A7;
-color:white;
-">
-
-Hapus
-
-</button>
+                <a href="{{ route('pegawai.edit', $p->id) }}" 
+                class="btn btn-sm"
+                style="
+                background:#28508D;
+                color:white;
+                ">
+                Edit
+                </a>
 
 
-</form>
+                <form action="{{ route('pegawai.destroy', $p->id) }}"
+                method="POST"
+                style="display:inline;"
+                onsubmit="return confirm('Yakin hapus data ini?')">
+
+                @csrf
+                @method('DELETE')
 
 
-</td>
+                <button class="btn btn-sm"
+
+                style="
+                background:#3C66A7;
+                color:white;
+                ">
+
+                Hapus
+
+                </button>
 
 
-</tr>
+                </form>
 
-@endforeach
+            </td>
+
+        </tr>
+
+        @endforeach
+
+    </tbody>
+
+</table>
 
 
 </tbody>

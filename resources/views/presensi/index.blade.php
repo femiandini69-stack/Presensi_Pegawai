@@ -289,7 +289,15 @@ color:white;
 
 
 <td>
-{{$d->jam_pulang}}
+@if($d->status == 'Hadir' || $d->status == 'Dinas Luar')
+
+    {{$d->jam_pulang ?? '-'}}
+
+@else
+
+    -
+
+@endif
 </td>
 
 
