@@ -2,126 +2,153 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Attendance;
+use App\Models\Presensi;
 use App\Models\Pegawai;
 use Illuminate\Http\Request;
 
+
 class DashboardController extends Controller
 {
-    public function index(Request $request)
-    {
-        $query = Attendance::with('pegawai');
 
 
-        // FILTER TANGGAL
-        if ($request->start_date && $request->end_date) {
+public function index(Request $request)
+{
 
-            $query->whereBetween('tanggal', [
-                $request->start_date,
-                $request->end_date
-            ]);
-
-        }
-
-
-        $attendances = $query->get();
+    $query = Presensi::query();
 
 
 
-        return view('admin.dashboard', [
-
-            // TOTAL PEGAWAI
-            'totalUser' => Pegawai::count(),
+    if($request->start_date && $request->end_date){
 
 
-            // REKAP KEHADIRAN
-            'hadir' => $attendances
-                ->where('keterangan_kehadiran', 'Hadir')
-                ->count(),
+        $query->whereBetween('tanggal',[
 
+            $request->start_date,
 
-            'izin' => $attendances
-                ->where('keterangan_kehadiran', 'Izin')
-                ->count(),
-
-
-            'sakit' => $attendances
-                ->where('keterangan_kehadiran', 'Sakit')
-                ->count(),
-
-
-            'cuti' => $attendances
-                ->where('keterangan_kehadiran', 'Cuti')
-                ->count(),
-
-
-            'alpha' => $attendances
-                ->where('keterangan_kehadiran', 'Alpha')
-                ->count(),
-
-
-            'dinas_luar' => $attendances
-                ->where('keterangan_kehadiran', 'Dinas Luar')
-                ->count(),
-
-
-
-            // PEGAWAI YANG BELUM ABSEN
-            'belumAbsen' => Pegawai::count() - $attendances->count(),
-
-
-
-            // DATA TABEL
-            'attendances' => $attendances
+            $request->end_date
 
         ]);
+
+
     }
 
 
 
-
-    // DATA REAL TIME
-    public function data()
-    {
-        $att = Attendance::whereDate(
-            'tanggal',
-            now()->toDateString()
-        )->get();
+    $presensi = $query->get();
 
 
 
-        return response()->json([
+    return view('admin.dashboard',[
 
 
-            'hadir' => $att
-                ->where('keterangan_kehadiran', 'Hadir')
-                ->count(),
+        'totalUser'=>Pegawai::count(),
 
 
-            'izin' => $att
-                ->where('keterangan_kehadiran', 'Izin')
-                ->count(),
+
+        'hadir'=>$presensi
+            ->where('status','Hadir')
+            ->count(),
 
 
-            'sakit' => $att
-                ->where('keterangan_kehadiran', 'Sakit')
-                ->count(),
+
+        'izin'=>$presensi
+            ->where('status','Izin')
+            ->count(),
 
 
-            'cuti' => $att
-                ->where('keterangan_kehadiran', 'Cuti')
-                ->count(),
+
+        'sakit'=>$presensi
+            ->where('status','Sakit')
+            ->count(),
 
 
-            'alpha' => $att
-                ->where('keterangan_kehadiran', 'Alpha')
-                ->count(),
+
+        'cuti'=>$presensi
+            ->where('status','Cuti')
+            ->count(),
 
 
-            'dinas_luar' => $att
-                ->where('keterangan_kehadiran', 'Dinas Luar')
-                ->count(),
 
-        ]);
-    }
+        'alpha'=>$presensi
+            ->where('status','Alpha')
+            ->count(),
+
+
+
+        'dinas_luar'=>$presensi
+            ->where('status','Dinas Luar')
+            ->count(),
+
+
+
+        'belumAbsen'=>Pegawai::count()
+            -
+            $presensi->count(),
+
+
+
+        'attendances'=>$presensi
+
+
+    ]);
+
+}
+
+
+
+
+public function data()
+{
+
+
+$presensi = Presensi::whereDate(
+
+'tanggal',
+
+now()->toDateString()
+
+)->get();
+
+
+
+return response()->json([
+
+
+'hadir'=>$presensi
+->where('status','Hadir')
+->count(),
+
+
+'izin'=>$presensi
+->where('status','Izin')
+->count(),
+
+
+'sakit'=>$presensi
+->where('status','Sakit')
+->count(),
+
+
+'cuti'=>$presensi
+->where('status','Cuti')
+->count(),
+
+
+'alpha'=>$presensi
+->where('status','Alpha')
+->count(),
+
+
+'dinas_luar'=>$presensi
+->where('status','Dinas Luar')
+->count(),
+
+
+]);
+
+
+}
+
+
+
 }

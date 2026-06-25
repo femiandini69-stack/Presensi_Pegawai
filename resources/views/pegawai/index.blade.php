@@ -7,9 +7,16 @@
 
     <h3>Daftar Pegawai</h3>
 
-    <a href="{{ route('pegawai.create') }}" class="btn btn-primary">
-        + Tambah Data
-    </a>
+    <a href="{{ route('pegawai.create') }}" 
+class="btn"
+style="
+background:#041025;
+color:white;
+">
+
++ Tambah Data
+
+</a>
 
 </div>
 
@@ -35,27 +42,57 @@
                 <td>{{ $p->divisi ?? '-' }}</td>
 
                 <td>
-                    <a href="{{ route('pegawai.edit', $p->id) }}" class="btn btn-warning btn-sm">
-                        Edit
-                    </a>
+                    <a href="{{ route('pegawai.edit', $p->id) }}" 
+class="btn btn-sm"
+style="
+background:#28508D;
+color:white;
+">
 
-                    <form action="{{ route('pegawai.destroy', $p->id) }}"
-                          method="POST"
-                          style="display:inline;"
-                          onsubmit="return confirm('Yakin hapus data ini?')">
+Edit
 
-                        @csrf
-                        @method('DELETE')
+</a>
 
-                        <button class="btn btn-danger btn-sm">
-                            Hapus
-                        </button>
-                    </form>
-                </td>
-            </tr>
-            @endforeach
-        </tbody>
-    </table>
+
+<form action="{{ route('pegawai.destroy', $p->id) }}"
+method="POST"
+style="display:inline;"
+onsubmit="return confirm('Yakin hapus data ini?')">
+
+@csrf
+@method('DELETE')
+
+
+<button class="btn btn-sm"
+
+style="
+background:#3C66A7;
+color:white;
+">
+
+Hapus
+
+</button>
+
+
+</form>
+
+
+</td>
+
+
+</tr>
+
+@endforeach
+
+
+</tbody>
+
+
+</table>
+
 
 </div>
+
+
 @endsection

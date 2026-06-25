@@ -4,105 +4,276 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Presensi;
+use App\Models\Pegawai;
 use Carbon\Carbon;
+
 
 class PresensiController extends Controller
 {
-    public function index()
-    {
-        $user = auth()->user();
 
-        if ($user->role === 'admin') {
-            $presensi = Presensi::latest()->get();
-        } else {
-            $presensi = Presensi::where('pegawai_id', $user->id)
-                ->latest()
-                ->get();
-        }
 
-        return view('presensi.index', compact('presensi'));
+public function index(Request $request)
+{
+
+    $query = Presensi::query();
+
+
+
+    if($request->search){
+
+        $query->where(function($q) use($request){
+
+            $q->where('nama','like','%'.$request->search.'%')
+              ->orWhere('nip','like','%'.$request->search.'%');
+
+        });
+
     }
 
-    public function create()
-    {
-        return view('presensi.create');
+
+
+    if($request->status){
+
+        $query->where(
+            'status',
+            $request->status
+        );
+
     }
 
-    public function store(Request $request)
-    {
-        $now = Carbon::now('Asia/Jakarta');
 
-        if ($now->format('H:i') < '07:00') {
-            return back()->with('error', 'Presensi belum dibuka (07:00)');
-        }
 
-        $data = $request->validate([
-            'nama' => 'required',
-            'nip' => 'nullable',
-            'jabatan' => 'nullable',
-            'divisi' => 'nullable',
-            'status' => 'required',
-            'keterangan' => 'nullable',
-            'bukti' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
-        ]);
+    $presensi = $query
+        ->latest()
+        ->get();
 
-        // AUTO DATA
-        $data['pegawai_id'] = auth()->id();
-        $data['tanggal'] = $now->toDateString();
-        $data['jam_masuk'] = $now->format('H:i:s');
-        $data['jam_pulang'] = $now->copy()->addHours(8)->format('H:i:s');
 
-        // UPLOAD FILE
-        if ($request->hasFile('bukti')) {
-            $data['bukti'] = $request->file('bukti')->store('presensi', 'public');
-        }
 
-        Presensi::create($data);
+    return view(
+        'presensi.index',
+        compact('presensi')
+    );
 
-        return redirect()->route('presensi.index')
-            ->with('success', 'Presensi berhasil disimpan!');
+}
+
+
+
+
+public function create()
+{
+
+    $pegawai = Pegawai::all();
+
+
+    return view(
+        'presensi.create',
+        compact('pegawai')
+    );
+
+}
+
+
+
+
+
+public function store(Request $request)
+{
+
+    $now = Carbon::now('Asia/Jakarta');
+
+
+    $data = $request->validate([
+
+        'pegawai_id'=>'required',
+
+        'tanggal'=>'required',
+
+        'status'=>'required',
+
+        'bukti'=>'nullable|image|mimes:jpg,jpeg,png|max:5120'
+
+    ]);
+
+
+
+    $pegawai = Pegawai::findOrFail(
+        $request->pegawai_id
+    );
+
+
+
+    $data['nama'] =
+    $pegawai->nama;
+
+
+    $data['nip'] =
+    $pegawai->nip;
+
+
+    $data['jabatan'] =
+    $pegawai->jabatan;
+
+
+    $data['divisi'] =
+    $pegawai->divisi;
+
+
+
+    $data['jam_masuk'] =
+    $now->format('H:i:s');
+
+
+
+    $data['jam_pulang'] =
+    $now->copy()
+    ->addHours(8)
+    ->format('H:i:s');
+
+
+
+
+    if($request->hasFile('bukti')){
+
+
+        $data['bukti'] =
+        $request->file('bukti')
+        ->store('presensi','public');
+
     }
 
-    public function edit($id)
-    {
-        $presensi = Presensi::findOrFail($id);
 
-        return view('presensi.edit', compact('presensi'));
+
+
+    Presensi::create($data);
+
+
+
+    return redirect()
+    ->route('presensi.index')
+    ->with(
+        'success',
+        'Presensi berhasil disimpan'
+    );
+
+}
+
+
+
+
+public function edit($id)
+{
+
+    $presensi =
+    Presensi::findOrFail($id);
+
+
+    $pegawai =
+    Pegawai::all();
+
+
+
+    return view(
+        'presensi.edit',
+        compact(
+            'presensi',
+            'pegawai'
+        )
+    );
+
+}
+
+
+
+
+
+public function update(Request $request,$id)
+{
+
+
+    $presensi =
+    Presensi::findOrFail($id);
+
+
+
+    $data = $request->validate([
+
+        'pegawai_id'=>'required',
+
+        'tanggal'=>'required',
+
+        'status'=>'required',
+
+        'keterangan'=>'nullable',
+
+        'bukti'=>'nullable|image|mimes:jpg,jpeg,png|max:5120'
+
+    ]);
+
+
+
+    $pegawai =
+    Pegawai::findOrFail(
+        $request->pegawai_id
+    );
+
+
+
+    $data['nama']=$pegawai->nama;
+
+    $data['nip']=$pegawai->nip;
+
+    $data['jabatan']=$pegawai->jabatan;
+
+    $data['divisi']=$pegawai->divisi;
+
+
+
+    if($request->hasFile('bukti')){
+
+        $data['bukti'] =
+        $request->file('bukti')
+        ->store('presensi','public');
+
     }
 
-    public function update(Request $request, $id)
-    {
-        $presensi = Presensi::findOrFail($id);
 
-        $data = $request->validate([
-            'nama' => 'required',
-            'nip' => 'nullable',
-            'jabatan' => 'nullable',
-            'divisi' => 'nullable',
-            'status' => 'required',
-            'keterangan' => 'nullable',
-            'bukti' => 'nullable|image|mimes:jpg,jpeg,png|max:5120',
-        ]);
 
-        if ($request->hasFile('bukti')) {
-            $data['bukti'] = $request->file('bukti')->store('presensi', 'public');
-        }
+    $presensi->update($data);
 
-        $presensi->update($data);
 
-        return redirect()->route('presensi.index')
-            ->with('success', 'Data berhasil diupdate!');
-    }
 
-    public function destroy($id)
-    {
-        if (auth()->user()->role !== 'admin') {
-            return back()->with('error', 'Akses ditolak!');
-        }
+    return redirect()
+    ->route('presensi.index')
+    ->with(
+        'success',
+        'Data berhasil diupdate'
+    );
 
-        $presensi = Presensi::findOrFail($id);
-        $presensi->delete();
+}
 
-        return back()->with('success', 'Data dihapus!');
-    }
+
+
+
+
+public function destroy($id)
+{
+
+    $presensi =
+    Presensi::findOrFail($id);
+
+
+    $presensi->delete();
+
+
+
+    return back()
+    ->with(
+        'success',
+        'Data berhasil dihapus'
+    );
+
+}
+
+
+
 }

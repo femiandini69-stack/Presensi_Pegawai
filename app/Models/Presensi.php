@@ -8,8 +8,10 @@ class Presensi extends Model
 {
     protected $table = 'presensi';
 
+
     protected $fillable = [
-        'nama_pegawai',
+        'pegawai_id',
+        'nama',
         'nip',
         'jabatan',
         'divisi',
@@ -20,4 +22,13 @@ class Presensi extends Model
         'bukti',
         'keterangan'
     ];
+
+
+    public function pegawai()
+    {
+        return $this->belongsTo(
+            Pegawai::class,
+            'pegawai_id'
+        );
+    }
 }
