@@ -41,20 +41,20 @@
                             <td>{{ $index + 1 }}</td>
                             <td>{{ $item->nama_jabatan }}</td>
                             <td>
-    <a href="{{ route('jabatan.edit', $item->id) }}" 
-       style="background-color: #2F456E; color: white; border: none; padding: 5px 10px; border-radius: 2px; text-decoration: none;">
-       Edit
-    </a>
+   <a href="{{ route('jabatan.edit', $item->id) }}" 
+   style="background-color: #2F456E; color: white; border: none; padding: 5px 8px; font-size: 12px; border-radius: 3px; text-decoration: none; margin-right: 5px;">
+   Edit
+</a>
 
-    <form action="{{ route('jabatan.destroy', $item->id) }}" method="POST" style="display:inline;">
-        @csrf
-        @method('DELETE')
-        <button type="submit" 
-                style="background-color: #54668D; color: white; border: none; padding: 5px 10px; border-radius: 2px; cursor: pointer;"
-                onclick="return confirm('Yakin ingin menghapus jabatan ini?')">
-                Hapus
-        </button>
-    </form>
+<form action="{{ route('jabatan.destroy', $item->id) }}" method="POST" style="display:inline;">
+    @csrf
+    @method('DELETE')
+    <button type="submit" 
+            style="background-color: #54668D; color: white; border: none; padding: 5px 8px; font-size: 12px; border-radius: 3px; cursor: pointer;"
+            onclick="return confirm('Yakin ingin menghapus jabatan ini?')">
+            Hapus
+    </button>
+</form>
 </td>
                             </td>
                         </tr>
