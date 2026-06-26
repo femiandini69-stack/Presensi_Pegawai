@@ -52,7 +52,7 @@ color:white;
 
             <td>
 
-                <a href="{{ route('pegawai.edit', $p->id) }}" 
+                <a href="{{ route('pegawai.edit', $p->nip) }}" 
                 class="btn btn-sm"
                 style="
                 background:#28508D;
@@ -62,7 +62,7 @@ color:white;
                 </a>
 
 
-                <form action="{{ route('pegawai.destroy', $p->id) }}"
+                <form action="{{ route('pegawai.destroy', $p->nip) }}"
                 method="POST"
                 style="display:inline;"
                 onsubmit="return confirm('Yakin hapus data ini?')">

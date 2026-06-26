@@ -102,7 +102,10 @@ Route::middleware(['auth', 'role:admin'])->group(function () {
     | MASTER DATA
     |--------------------------------------------------------------------------
     */
-    Route::resource('pegawai', PegawaiController::class);
+    Route::resource('pegawai', PegawaiController::class)
+    ->parameters([
+        'pegawai' => 'nip'
+    ]);
     Route::resource('jabatan', JabatanController::class);
     Route::resource('pengajuan', PengajuanController::class);
 

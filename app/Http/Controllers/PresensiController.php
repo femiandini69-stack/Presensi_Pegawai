@@ -11,14 +11,25 @@ use Carbon\Carbon;
 class PresensiController extends Controller
 {
 
-
 public function index(Request $request)
 {
 
     $query = Presensi::query();
 
 
+    // PEGAWAI HANYA LIHAT DATA SENDIRI
+    if (auth()->user()->role == 'pegawai') {
 
+        $query->where(
+            'nip',
+            auth()->user()->nip
+        );
+
+    }
+
+
+
+    // SEARCH
     if($request->search){
 
         $query->where(function($q) use($request){
@@ -32,6 +43,7 @@ public function index(Request $request)
 
 
 
+    // FILTER STATUS
     if($request->status){
 
         $query->where(
@@ -55,9 +67,6 @@ public function index(Request $request)
     );
 
 }
-
-
-
 
 public function create()
 {

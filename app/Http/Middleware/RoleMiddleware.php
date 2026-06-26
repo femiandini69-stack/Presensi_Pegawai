@@ -14,7 +14,9 @@ class RoleMiddleware
         }
 
         if (!in_array(auth()->user()->role, $roles)) {
-            abort(403, 'Akses ditolak');
+
+            abort(403, 'Akses ini hanya bisa dilihat oleh admin');
+
         }
 
         return $next($request);

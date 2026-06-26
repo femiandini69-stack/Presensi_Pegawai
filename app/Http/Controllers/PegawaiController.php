@@ -89,8 +89,7 @@ class PegawaiController extends Controller
 
         ]);
 
-
-        $pegawai = Pegawai::findOrFail($id);
+$pegawai = Pegawai::where('nip',$id)->firstOrFail();
 
 
         $pegawai->update([
@@ -114,17 +113,16 @@ class PegawaiController extends Controller
     // =========================
     // HAPUS DATA
     // =========================
-    public function destroy($id)
-    {
+    public function destroy($nip)
+{
 
-        $pegawai = Pegawai::findOrFail($id);
+    $pegawai = Pegawai::where('nip',$nip)->firstOrFail();
 
-        $pegawai->delete();
+    $pegawai->delete();
 
 
-        return redirect()
-            ->route('pegawai.index')
-            ->with('success','Data pegawai berhasil dihapus!');
-    }
-
+    return redirect()
+        ->route('pegawai.index')
+        ->with('success','Data pegawai berhasil dihapus!');
+}
 }

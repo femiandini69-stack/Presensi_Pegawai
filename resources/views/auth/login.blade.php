@@ -6,7 +6,7 @@
     <div class="container d-flex justify-content-center align-items-center min-vh-100">
         <div class="card shadow-lg border-0 rounded-4" style="width: 100%; max-width: 400px; padding: 20px;">
             <div class="card-body">
-                <h4 class="text-center fw-bold mb-4" style="color: #3d6780;">PRESENSIKU</h4>
+                <h4 class="text-center fw-bold mb-4" style="color: #3d6780;">SISTEM PRESENSI PEGAWAI</h4>
                 <p class="text-center text-muted mb-4">Silakan masuk untuk memulai sesi Anda</p>
 
                 <form method="POST" action="{{ route('login') }}">
